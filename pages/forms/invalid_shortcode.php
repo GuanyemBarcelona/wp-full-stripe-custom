@@ -1,0 +1,1 @@
+<p class="alert alert-error">This payment form is invalid. Please check the settings and shortcode attributes</p>
