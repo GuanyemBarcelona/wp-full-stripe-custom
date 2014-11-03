@@ -24,12 +24,25 @@ class MM_WPFS_Customer
         add_action('wp_ajax_nopriv_fullstripe_checkout_form_charge', array($this, 'fullstripe_checkout_charge'));
     }
 
+    private static function is_valid_dni_nie($string) {
+      if (strlen($string) != 9 ||
+          preg_match('/^[XYZ]?([0-9]{7,8})([A-Z])$/i', $string, $matches) !== 1) {
+          return false;
+      }
+      $map = 'TRWAGMYFPDXBNJZSQVHLCKE';
+      list(, $number, $letter) = $matches;
+      return strtoupper($letter) === $map[((int) $number) % 23];
+    }
+
+    /*
+    * Thoroughly changed by Felip
+    */
     function fullstripe_payment_charge()
     {
         //get POST data from form
         $valid = true;
         $card = $_POST['stripeToken'];
-        $name = sanitize_text_field($_POST['fullstripe_name']);
+        $name = sanitize_text_field($_POST['fullstripe_name']); // card holder's name
         $amount = $_POST['amount'];
         $formName = $_POST['formName'];
         $isCustom = $_POST['isCustom'];
@@ -52,16 +65,72 @@ class MM_WPFS_Customer
                 $amount = $amount * 100; //Stripe expects amounts in cents/pence
             }
         }
+        
+        $firstname = isset($_POST['fullstripe_firstname']) ? sanitize_text_field($_POST['fullstripe_firstname']) : '';
+        $lastname = isset($_POST['fullstripe_lastname']) ? sanitize_text_field($_POST['fullstripe_lastname']) : '';
+        if ($firstname == '' || $lastname == ''){
+            $valid = false;
+            $return = array('success' => false, 'msg' => __('Please enter first name and last name', 'wp-full-stripe'));
+        }
 
+        $telephone = isset($_POST['fullstripe_telephone']) ? sanitize_text_field($_POST['fullstripe_telephone']) : '';
+        if ($telephone == ''){
+            $valid = false;
+            $return = array('success' => false, 'msg' => __('Please enter a telephone number', 'wp-full-stripe'));
+        }
+
+        $doctype = $_POST['fullstripe_doctype'];
+        if ($doctype != 'dni' && $doctype != 'passport'){
+            $valid = false;
+            $return = array('success' => false, 'msg' => __('Please choose a document type', 'wp-full-stripe'));
+        }else{
+            if ($doctype == 'dni'){
+              $dni = isset($_POST['fullstripe_doc_dni']) ? sanitize_text_field($_POST['fullstripe_doc_dni']) : '';
+              if (!MM_WPFS_Customer::is_valid_dni_nie($dni)){
+                $valid = false;
+                $return = array('success' => false, 'msg' => __('Please enter a valid document ID', 'wp-full-stripe'));
+              }
+            }else if ($doctype == 'passport'){
+              $passport = isset($_POST['fullstripe_doc_passport']) ? sanitize_text_field($_POST['fullstripe_doc_passport']) : '';
+              if ($passport == ''){
+                  $valid = false;
+                  $return = array('success' => false, 'msg' => __('Please enter a Passport ID', 'wp-full-stripe'));
+              }
+            }
+        }
+
+        $birthdate_array = $_POST['fullstripe_birthdate'];
+        $valid_date = false;
+        $adult = false;
+        $birthdate = null;
+        if ($birthdate_array[0] != '' && $birthdate_array[1] != '' && $birthdate_array[2] != ''){
+          $valid_date = checkdate($birthdate_array[1],$birthdate_array[0],$birthdate_array[2]);
+          if ($valid_date){
+            $birthdate = new DateTime();
+            $birthdate->setDate($birthdate_array[2], $birthdate_array[1], $birthdate_array[0]);
+            $today = new DateTime();
+            $interval = $birthdate->diff($today);
+            $adult = ($interval->y >= 18);
+          }
+        }
+        if (!$valid_date){
+          $valid = false;
+          $return = array('success' => false, 'msg' => __('Please choose a valid date of birth', 'wp-full-stripe'));
+        }else{
+          if (!$adult){
+            $valid = false;
+            $return = array('success' => false, 'msg' => __('You must be 18 years old or more', 'wp-full-stripe'));
+          }
+        }
+
+        $country = isset($_POST['fullstripe_address_country']) ? sanitize_text_field($_POST['fullstripe_address_country']) : '';
         $address1 = isset($_POST['fullstripe_address_line1']) ? sanitize_text_field($_POST['fullstripe_address_line1']) : '';
-        $address2 = isset($_POST['fullstripe_address_line2']) ? sanitize_text_field($_POST['fullstripe_address_line2']) : '';
         $city = isset($_POST['fullstripe_address_city']) ? sanitize_text_field($_POST['fullstripe_address_city']) : '';
         $state = isset($_POST['fullstripe_address_state']) ? sanitize_text_field($_POST['fullstripe_address_state']) : '';
         $zip = isset($_POST['fullstripe_address_zip']) ? sanitize_text_field($_POST['fullstripe_address_zip']) : '';
-
         if ($showAddress == 1)
         {
-            if ($address1 == '' || $city == '' || $zip == '')
+            if ($country == '' || $address1 == '' || $city == '' || $zip == '')
             {
                 $valid = false;
                 $return = array('success' => false, 'msg' => __('Please enter a valid billing address', 'wp-full-stripe'));
@@ -74,20 +143,24 @@ class MM_WPFS_Customer
            $email = $_POST['fullstripe_email'];
            if (!filter_var($email, FILTER_VALIDATE_EMAIL))
            {
-               $valid = false;
-               $return = array('success' => false, 'msg' => __('Please enter a valid email address', 'wp-full-stripe'));
+                $valid = false;
+                $return = array('success' => false, 'msg' => __('Please enter a valid email address', 'wp-full-stripe'));
+           }else{
+                $email2 = $_POST['fullstripe_email2'];
+                if ($email != $email2){
+                  $valid = false;
+                  $return = array('success' => false, 'msg' => __('The email and email confirmation are not the same', 'wp-full-stripe'));
+                }
            }
         }
 
         if ($valid)
         {
-            $customInput = isset($_POST['fullstripe_custom_input']) ? $_POST['fullstripe_custom_input'] : 'n/a';
             $description = "Payment from $name on form: $formName";
             $metadata = array(
                 'customer_name' => $name,
                 'customer_email' => $email,
                 'billing_address_line1' => $address1,
-                'billing_address_line2' => $address2,
                 'billing_address_city' => $city,
                 'billing_address_state' => $state,
                 'billing_address_zip' => $zip
@@ -106,15 +179,22 @@ class MM_WPFS_Customer
                 //create a customer object
                 $stripeCustomer = $this->stripe->create_customer($card, $email, $metadata);
                 //try the charge
-                $metadata['custom_input'] = $customInput;
                 $result = $this->stripe->charge_customer($stripeCustomer->id, $amount, $description, $metadata,($sendPluginEmail==false ? $email : null));
                 do_action('fullstripe_after_payment_charge', $result);
 
                 //save the payment
-                $address = array('line1' => $address1, 'line2' => $address2, 'city' => $city, 'state' => $state, 'zip' => $zip);
-                $this->db->fullstripe_insert_payment($result, $address, $stripeCustomer->id);
+                $address = array('country' => $country, 'line1' => $address1, 'city' => $city, 'state' => $state, 'zip' => $zip);
+                $otherData = array(
+                  'firstname' => $firstname,
+                  'lastname' => $lastname,
+                  'telephone' => $telephone,
+                  'documentType' => $doctype,
+                  'documentID' => ($doctype == 'dni')? $dni : $passport,
+                  'birthDate' => $birthdate->getTimestamp(),
+                );
+                $this->db->fullstripe_insert_payment($result, $address, $stripeCustomer->id, $otherData);
 
-                $return = array('success' => true, 'msg' => 'Payment Successful!');
+                $return = array('success' => true, 'msg' => __("Payment Successful!", "wp-full-stripe"));
                 if ($doRedirect == 1)
                 {
                     $return['redirect'] = true;
@@ -141,39 +221,143 @@ class MM_WPFS_Customer
         exit;
     }
 
-
+    /*
+    * Thoroughly changed by Felip
+    */
     function fullstripe_subscription_charge()
     {
+        $valid = true;
         $card = $_POST['stripeToken'];
         $name = $_POST['fullstripe_name'];
-        $plan = $_POST['fullstripe_plan'];
-        $customInput = isset($_POST['fullstripe_custom_input']) ? $_POST['fullstripe_custom_input'] : 'n/a';
+        $plan = isset($_POST['fullstripe_plan']) ? $_POST['fullstripe_plan'] : '';
         $couponCode = isset($_POST['fullstripe_coupon_input']) ? $_POST['fullstripe_coupon_input'] : '';
         $doRedirect = $_POST['formDoRedirect'];
         $redirectPostID = $_POST['formRedirectPostID'];
+
+        $error_messages = [];
+
+        if ($plan == ''){
+            $error_messages[] = array(
+              'text' => __('Please choose the desired donation per month', 'wp-full-stripe'),
+              'input' => 'fullstripe_plan',
+            );
+        }
+
+        $firstname = isset($_POST['fullstripe_firstname']) ? sanitize_text_field($_POST['fullstripe_firstname']) : '';
+        if ($firstname == ''){
+            $error_messages[] = array(
+              'text' => __('Please enter the first name', 'wp-full-stripe'),
+              'input' => 'fullstripe_firstname',
+            );
+        }
+        $lastname = isset($_POST['fullstripe_lastname']) ? sanitize_text_field($_POST['fullstripe_lastname']) : '';
+        if ($lastname == ''){
+            $error_messages[] = array(
+              'text' => __('Please enter the last name', 'wp-full-stripe'),
+              'input' => 'fullstripe_lastname',
+            );
+        }
+
+        $telephone = isset($_POST['fullstripe_telephone']) ? sanitize_text_field($_POST['fullstripe_telephone']) : '';
+        if ($telephone == ''){
+            $error_messages[] = array(
+              'text' => __('Please enter a telephone number', 'wp-full-stripe'),
+              'input' => 'fullstripe_telephone',
+            );
+        }
+
+        $doctype = $_POST['fullstripe_doctype'];
+        if ($doctype != 'dni' && $doctype != 'passport'){
+            $error_messages[] = array(
+              'text' => __('Please choose a document type', 'wp-full-stripe'),
+              'input' => 'fullstripe_doctype',
+            );
+        }else{
+            if ($doctype == 'dni'){
+              $dni = isset($_POST['fullstripe_doc_dni']) ? sanitize_text_field($_POST['fullstripe_doc_dni']) : '';
+              if (!MM_WPFS_Customer::is_valid_dni_nie($dni)){
+                $error_messages[] = array(
+                  'text' => __('Please enter a valid document ID', 'wp-full-stripe'),
+                  'input' => 'fullstripe_doc_dni',
+                );
+              }
+            }else if ($doctype == 'passport'){
+              $passport = isset($_POST['fullstripe_doc_passport']) ? sanitize_text_field($_POST['fullstripe_doc_passport']) : '';
+              if ($passport == ''){
+                $error_messages[] = array(
+                  'text' => __('Please enter a Passport ID', 'wp-full-stripe'),
+                  'input' => 'fullstripe_doc_passport',
+                );
+              }
+            }
+        }
+
+        $birthdate_array = $_POST['fullstripe_birthdate'];
+        $valid_date = false;
+        $adult = false;
+        $birthdate = null;
+        if ($birthdate_array[0] != '' && $birthdate_array[1] != '' && $birthdate_array[2] != ''){
+          $valid_date = checkdate($birthdate_array[1],$birthdate_array[0],$birthdate_array[2]);
+          if ($valid_date){
+            $birthdate = new DateTime();
+            $birthdate->setDate($birthdate_array[2], $birthdate_array[1], $birthdate_array[0]);
+            $today = new DateTime();
+            $interval = $birthdate->diff($today);
+            $adult = ($interval->y >= 18);
+          }
+        }
+        if (!$valid_date){
+          $error_messages[] = array(
+            'text' => __('Please choose a valid date of birth', 'wp-full-stripe'),
+            'input' => 'fullstripe_birthdate',
+          );
+        }else{
+          if (!$adult){
+            $error_messages[] = array(
+              'text' => __('You must be 18 years old or more', 'wp-full-stripe'),
+              'input' => 'fullstripe_birthdate',
+            );
+          }
+        }
+
+        $country = isset($_POST['fullstripe_address_country']) ? sanitize_text_field($_POST['fullstripe_address_country']) : '';
         $address1 = isset($_POST['fullstripe_address_line1']) ? sanitize_text_field($_POST['fullstripe_address_line1']) : '';
-        $address2 = isset($_POST['fullstripe_address_line2']) ? sanitize_text_field($_POST['fullstripe_address_line2']) : '';
         $city = isset($_POST['fullstripe_address_city']) ? sanitize_text_field($_POST['fullstripe_address_city']) : '';
         $state = isset($_POST['fullstripe_address_state']) ? sanitize_text_field($_POST['fullstripe_address_state']) : '';
         $zip = isset($_POST['fullstripe_address_zip']) ? sanitize_text_field($_POST['fullstripe_address_zip']) : '';
         $setupFee = $_POST['fullstripe_setupFee'];
 
-        //validation
-        $valid = true;
         $email = '';
         if (isset($_POST['fullstripe_email']))
         {
             $email = $_POST['fullstripe_email'];
             if (!filter_var($email, FILTER_VALIDATE_EMAIL))
             {
-                $valid = false;
-                $return = array('success' => false, 'msg' => __('Please enter a valid email address', 'wp-full-stripe'));
-            }
+                $error_messages[] = array(
+                  'text' => __('Please enter a valid email address', 'wp-full-stripe'),
+                  'input' => 'fullstripe_email',
+                );
+            }else{
+                $email2 = $_POST['fullstripe_email2'];
+                if ($email != $email2){
+                  $error_messages[] = array(
+                    'text' => __('The email and email confirmation are not the same', 'wp-full-stripe'),
+                    'input' => 'fullstripe_email2',
+                  );
+                }
+           }
         }
         else
         {
-            $valid = false;
-            $return = array('success' => false, 'msg' => __('Please enter a valid email address', 'wp-full-stripe'));
+            $error_messages[] = array(
+              'text' => __('Please enter a valid email address', 'wp-full-stripe'),
+              'input' => 'fullstripe_email',
+            );
+        }
+
+        if (count($error_messages)){
+          $valid = false;
+          $return = array('success' => false, 'error_messages' => $error_messages);
         }
 
         if ($valid)
@@ -183,11 +367,9 @@ class MM_WPFS_Customer
                 'customer_name' => $name,
                 'customer_email' => $email,
                 'billing_address_line1' => $address1,
-                'billing_address_line2' => $address2,
                 'billing_address_city' => $city,
                 'billing_address_state' => $state,
                 'billing_address_zip' => $zip,
-                'custom_input' => $customInput
             );
 
             try
@@ -195,10 +377,22 @@ class MM_WPFS_Customer
                 do_action('fullstripe_before_subscription_charge', $plan);
                 $customer = $this->stripe->subscribe($plan, $card, $email, $description, $couponCode, $setupFee, $metadata);
                 do_action('fullstripe_after_subscription_charge', $customer);
+                // TODO: $customer is null!
 
-                $this->db->fullstripe_insert_subscriber($customer, $name, array('line1' => $address1, 'line2' => $address2, 'city' => $city, 'state' => $state,  'zip' => $zip));
+                // save the subscriber
+                $address = array('country' => $country, 'line1' => $address1, 'city' => $city, 'state' => $state, 'zip' => $zip);
+                $otherData = array(
+                  'firstname' => $firstname,
+                  'lastname' => $lastname,
+                  'telephone' => $telephone,
+                  'documentType' => $doctype,
+                  'documentID' => ($doctype == 'dni')? $dni : $passport,
+                  'birthDate' => $birthdate->getTimestamp(),
+                );
 
-                $return = array('success' => true, 'msg' => 'Payment Successful. Thanks for subscribing!');
+                $this->db->fullstripe_insert_subscriber($customer, $name, $address, $otherData);
+
+                $return = array('success' => true, 'msg' => __("Payment Successful. Thanks for subscribing!", "wp-full-stripe"));
                 if ($doRedirect == 1)
                 {
                     $return['redirect'] = true;
@@ -219,6 +413,9 @@ class MM_WPFS_Customer
         exit;
     }
 
+    /*
+    * Unchanged, not used
+    */
     function fullstripe_checkout_charge()
     {
         //get POST data from form
@@ -244,9 +441,10 @@ class MM_WPFS_Customer
             do_action('fullstripe_after_checkout_payment_charge', $result);
 
             //save the payment
-            $this->db->fullstripe_insert_payment($result, array('line1' => '', 'line2' => '', 'city' => '', 'state' => '', 'zip' => ''), $stripeCustomer->id);
+            $address = array('line1' => '', 'line2' => '', 'city' => '', 'state' => '', 'zip' => '');
+            $this->db->fullstripe_insert_payment($result, $address, $stripeCustomer->id);
 
-            $return = array('success' => true, 'msg' => 'Payment Successful!');
+            $return = array('success' => true, 'msg' => __("Payment Successful!", "wp-full-stripe"));
             if ($doRedirect == 1)
             {
                 $return['redirect'] = true;
@@ -343,4 +541,5 @@ class MM_WPFS_Customer
                 apply_filters('fullstripe_email_headers_filter', $headers));
         }
     }
+
 }
