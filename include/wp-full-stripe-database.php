@@ -10,7 +10,6 @@ class MM_WPFS_Database
         global $wpdb;
 
         $table = $wpdb->prefix . 'fullstripe_payments';
-
         $sql = "CREATE TABLE " . $table . " (
         paymentID INT NOT NULL AUTO_INCREMENT,
         eventID VARCHAR(100) NOT NULL,
@@ -19,12 +18,17 @@ class MM_WPFS_Database
         livemode TINYINT(1),
         amount INT NOT NULL,
         fee INT NOT NULL,
+        firstname VARCHAR(50) NOT NULL,
+        lastname VARCHAR(50) NOT NULL,
+        telephone VARCHAR(20) NOT NULL,
+        documentType VARCHAR(20) NOT NULL,
+        documentID VARCHAR(20) NOT NULL,
+        birthDate DATETIME NOT NULL,
+        addressCountry VARCHAR(3) NOT NULL,
         addressLine1 VARCHAR(500) NOT NULL,
-        addressLine2 VARCHAR(500) NOT NULL,
         addressCity VARCHAR(500) NOT NULL,
         addressState VARCHAR(255) NOT NULL,
         addressZip VARCHAR(100) NOT NULL,
-        addressCountry VARCHAR(100) NOT NULL,
         created DATETIME NOT NULL,
         stripeCustomerID VARCHAR(100),
         UNIQUE KEY paymentID (paymentID)
@@ -33,8 +37,33 @@ class MM_WPFS_Database
         //database write/update
         dbDelta($sql);
 
-        $table = $wpdb->prefix . 'fullstripe_payment_forms';
+        $table = $wpdb->prefix . 'fullstripe_subscribers';
+        $sql = "CREATE TABLE " . $table . " (
+        subscriberID INT NOT NULL AUTO_INCREMENT,
+        stripeCustomerID VARCHAR(100) NOT NULL,
+        name VARCHAR(100) NOT NULL,
+        email VARCHAR(255) NOT NULL,
+        planID VARCHAR(100) NOT NULL,
+        firstname VARCHAR(50) NOT NULL,
+        lastname VARCHAR(50) NOT NULL,
+        telephone VARCHAR(20) NOT NULL,
+        documentType VARCHAR(20) NOT NULL,
+        documentID VARCHAR(20) NOT NULL,
+        birthDate DATETIME NOT NULL,
+        addressCountry VARCHAR(3) NOT NULL,
+        addressLine1 VARCHAR(500) NOT NULL,
+        addressLine2 VARCHAR(500) NOT NULL,
+        addressCity VARCHAR(500) NOT NULL,
+        addressState VARCHAR(255) NOT NULL,
+        addressZip VARCHAR(100) NOT NULL,
+        created DATETIME NOT NULL,
+        UNIQUE KEY subscriberID (subscriberID)
+        );";
 
+        //database write/update
+        dbDelta($sql);
+
+        $table = $wpdb->prefix . 'fullstripe_payment_forms';
         $sql = "CREATE TABLE " . $table . " (
         paymentFormID INT NOT NULL AUTO_INCREMENT,
         name VARCHAR(100) NOT NULL,
@@ -58,7 +87,6 @@ class MM_WPFS_Database
         dbDelta($sql);
 
         $table = $wpdb->prefix . 'fullstripe_subscription_forms';
-
         $sql = "CREATE TABLE " . $table . " (
         subscriptionFormID INT NOT NULL AUTO_INCREMENT,
         name VARCHAR(100) NOT NULL,
@@ -79,29 +107,7 @@ class MM_WPFS_Database
         //database write/update
         dbDelta($sql);
 
-        $table = $wpdb->prefix . 'fullstripe_subscribers';
-
-        $sql = "CREATE TABLE " . $table . " (
-        subscriberID INT NOT NULL AUTO_INCREMENT,
-        stripeCustomerID VARCHAR(100) NOT NULL,
-        name VARCHAR(100) NOT NULL,
-        email VARCHAR(255) NOT NULL,
-        planID VARCHAR(100) NOT NULL,
-        addressLine1 VARCHAR(500) NOT NULL,
-        addressLine2 VARCHAR(500) NOT NULL,
-        addressCity VARCHAR(500) NOT NULL,
-        addressState VARCHAR(255) NOT NULL,
-        addressZip VARCHAR(100) NOT NULL,
-        addressCountry VARCHAR(100) NOT NULL,
-        created DATETIME NOT NULL,
-        UNIQUE KEY subscriberID (subscriberID)
-        );";
-
-        //database write/update
-        dbDelta($sql);
-
         $table = $wpdb->prefix . 'fullstripe_checkout_forms';
-
         $sql = "CREATE TABLE " . $table . " (
         checkoutFormID INT NOT NULL AUTO_INCREMENT,
         name VARCHAR(100) NOT NULL,
@@ -138,7 +144,7 @@ class MM_WPFS_Database
         do_action('fullstripe_setup_db');
     }
 
-    function fullstripe_insert_payment($payment, $address, $customerID = null)
+    function fullstripe_insert_payment($payment, $address, $customerID = null, $otherData = array())
     {
         global $wpdb;
 
@@ -149,8 +155,14 @@ class MM_WPFS_Database
             'livemode' => $payment->livemode,
             'amount' => $payment->amount,
             'fee' => $payment->fee,
+            'firstname' => $otherData['firstname'],
+            'lastname' => $otherData['lastname'],
+            'telephone' => $otherData['telephone'],
+            'documentType' => $otherData['documentType'],
+            'documentID' => $otherData['documentID'],
+            'birthDate' => date('Y-m-d H:i:s', $otherData['birthDate']),
+            'addressCountry' => $address['country'],
             'addressLine1' => $address['line1'],
-            'addressLine2' => $address['line2'],
             'addressCity' => $address['city'],
             'addressState' => $address['state'],
             'addressZip' => $address['zip'],
@@ -161,15 +173,21 @@ class MM_WPFS_Database
         $wpdb->insert($wpdb->prefix . 'fullstripe_payments', apply_filters('fullstripe_insert_payment_data', $data));
     }
 
-    function fullstripe_insert_subscriber($customer, $name, $address)
+    function fullstripe_insert_subscriber($customer, $name, $address, $otherData = array())
     {
         $data = array(
             'stripeCustomerID' => $customer->id,
             'name' => $name,
             'email' => $customer->email,
             'planID' => $customer->subscription->plan->id,
+            'firstname' => $otherData['firstname'],
+            'lastname' => $otherData['lastname'],
+            'telephone' => $otherData['telephone'],
+            'documentType' => $otherData['documentType'],
+            'documentID' => $otherData['documentID'],
+            'birthDate' => date('Y-m-d H:i:s', $otherData['birthDate']),
+            'addressCountry' => $address['country'],
             'addressLine1' => $address['line1'],
-            'addressLine2' => $address['line2'],
             'addressCity' => $address['city'],
             'addressState' => $address['state'],
             'addressZip' => $address['zip'],
