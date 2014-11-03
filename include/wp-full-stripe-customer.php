@@ -34,9 +34,6 @@ class MM_WPFS_Customer
       return strtoupper($letter) === $map[((int) $number) % 23];
     }
 
-    /*
-    * Thoroughly changed by Felip
-    */
     function fullstripe_payment_charge()
     {
         //get POST data from form
@@ -52,13 +49,17 @@ class MM_WPFS_Customer
         $sendReceipt = $_POST['sendEmailReceipt'];
         $options = get_option('fullstripe_options');
 
+        $error_messages = [];
+
         if ($isCustom == 1)
         {
             $amount = $_POST['fullstripe_custom_amount'];
             if (!is_numeric($amount))
             {
-                $valid = false;
-                $return = array('success' => false, 'msg' => __('The payment amount is invalid, please only use numbers and a decimal point', 'wp-full-stripe'));
+                $error_messages[] = array(
+                  'text' => __('The payment amount is invalid, please only use numbers and a decimal point', 'wp-full-stripe'),
+                  'input' => 'fullstripe_custom_amount',
+                );
             }
             else
             {
@@ -67,34 +68,50 @@ class MM_WPFS_Customer
         }
         
         $firstname = isset($_POST['fullstripe_firstname']) ? sanitize_text_field($_POST['fullstripe_firstname']) : '';
+        if ($firstname == ''){
+            $error_messages[] = array(
+              'text' => __('Please enter first name', 'wp-full-stripe'),
+              'input' => 'fullstripe_firstname',
+            );
+        }
         $lastname = isset($_POST['fullstripe_lastname']) ? sanitize_text_field($_POST['fullstripe_lastname']) : '';
-        if ($firstname == '' || $lastname == ''){
-            $valid = false;
-            $return = array('success' => false, 'msg' => __('Please enter first name and last name', 'wp-full-stripe'));
+        if ($lastname == ''){
+            $error_messages[] = array(
+              'text' => __('Please enter last name', 'wp-full-stripe'),
+              'input' => 'fullstripe_lastname',
+            );
         }
 
         $telephone = isset($_POST['fullstripe_telephone']) ? sanitize_text_field($_POST['fullstripe_telephone']) : '';
         if ($telephone == ''){
-            $valid = false;
-            $return = array('success' => false, 'msg' => __('Please enter a telephone number', 'wp-full-stripe'));
+            $error_messages[] = array(
+              'text' => __('Please enter a telephone number', 'wp-full-stripe'),
+              'input' => 'fullstripe_telephone',
+            );
         }
 
         $doctype = $_POST['fullstripe_doctype'];
         if ($doctype != 'dni' && $doctype != 'passport'){
-            $valid = false;
-            $return = array('success' => false, 'msg' => __('Please choose a document type', 'wp-full-stripe'));
+            $error_messages[] = array(
+              'text' => __('Please choose a document type', 'wp-full-stripe'),
+              'input' => 'fullstripe_doctype',
+            );
         }else{
             if ($doctype == 'dni'){
               $dni = isset($_POST['fullstripe_doc_dni']) ? sanitize_text_field($_POST['fullstripe_doc_dni']) : '';
               if (!MM_WPFS_Customer::is_valid_dni_nie($dni)){
-                $valid = false;
-                $return = array('success' => false, 'msg' => __('Please enter a valid document ID', 'wp-full-stripe'));
+                $error_messages[] = array(
+                  'text' => __('Please enter a valid document ID', 'wp-full-stripe'),
+                  'input' => 'fullstripe_doc_dni',
+                );
               }
             }else if ($doctype == 'passport'){
               $passport = isset($_POST['fullstripe_doc_passport']) ? sanitize_text_field($_POST['fullstripe_doc_passport']) : '';
               if ($passport == ''){
-                  $valid = false;
-                  $return = array('success' => false, 'msg' => __('Please enter a Passport ID', 'wp-full-stripe'));
+                  $error_messages[] = array(
+                    'text' => __('Please enter a Passport ID', 'wp-full-stripe'),
+                    'input' => 'fullstripe_doc_passport',
+                  );
               }
             }
         }
@@ -114,12 +131,16 @@ class MM_WPFS_Customer
           }
         }
         if (!$valid_date){
-          $valid = false;
-          $return = array('success' => false, 'msg' => __('Please choose a valid date of birth', 'wp-full-stripe'));
+          $error_messages[] = array(
+            'text' => __('Please choose a valid date of birth', 'wp-full-stripe'),
+            'input' => 'fullstripe_birthdate',
+          );
         }else{
           if (!$adult){
-            $valid = false;
-            $return = array('success' => false, 'msg' => __('You must be 18 years old or more', 'wp-full-stripe'));
+            $error_messages[] = array(
+              'text' => __('You must be 18 years old or more', 'wp-full-stripe'),
+              'input' => 'fullstripe_birthdate',
+            );
           }
         }
 
@@ -130,10 +151,29 @@ class MM_WPFS_Customer
         $zip = isset($_POST['fullstripe_address_zip']) ? sanitize_text_field($_POST['fullstripe_address_zip']) : '';
         if ($showAddress == 1)
         {
-            if ($country == '' || $address1 == '' || $city == '' || $zip == '')
-            {
-                $valid = false;
-                $return = array('success' => false, 'msg' => __('Please enter a valid billing address', 'wp-full-stripe'));
+            if ($country == ''){
+              $error_messages[] = array(
+                'text' => __('Please enter a Country', 'wp-full-stripe'),
+                'input' => 'fullstripe_address_country',
+              );
+            }
+            if ($address1 == ''){
+              $error_messages[] = array(
+                'text' => __('Please enter a Billing Address', 'wp-full-stripe'),
+                'input' => 'fullstripe_address_line1',
+              );
+            }
+            if ($city == ''){
+              $error_messages[] = array(
+                'text' => __('Please enter a City', 'wp-full-stripe'),
+                'input' => 'fullstripe_address_city',
+              );
+            }
+            if ($zip == ''){
+              $error_messages[] = array(
+                'text' => __('Please enter a Zip/Postcode', 'wp-full-stripe'),
+                'input' => 'fullstripe_address_zip',
+              );
             }
         }
 
@@ -143,15 +183,24 @@ class MM_WPFS_Customer
            $email = $_POST['fullstripe_email'];
            if (!filter_var($email, FILTER_VALIDATE_EMAIL))
            {
-                $valid = false;
-                $return = array('success' => false, 'msg' => __('Please enter a valid email address', 'wp-full-stripe'));
+                $error_messages[] = array(
+                  'text' => __('Please enter a valid email address', 'wp-full-stripe'),
+                  'input' => 'fullstripe_email',
+                );
            }else{
                 $email2 = $_POST['fullstripe_email2'];
                 if ($email != $email2){
-                  $valid = false;
-                  $return = array('success' => false, 'msg' => __('The email and email confirmation are not the same', 'wp-full-stripe'));
+                  $error_messages[] = array(
+                    'text' => __('The email and email confirmation are not the same', 'wp-full-stripe'),
+                    'input' => 'fullstripe_email2',
+                  );
                 }
            }
+        }
+
+        if (count($error_messages)){
+          $valid = false;
+          $return = array('success' => false, 'error_messages' => $error_messages);
         }
 
         if ($valid)
@@ -221,9 +270,6 @@ class MM_WPFS_Customer
         exit;
     }
 
-    /*
-    * Thoroughly changed by Felip
-    */
     function fullstripe_subscription_charge()
     {
         $valid = true;
