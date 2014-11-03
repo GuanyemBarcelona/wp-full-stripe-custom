@@ -1,1 +1,1 @@
-<p class="alert alert-error">This payment form is invalid. Please check the settings and shortcode attributes</p>
+<p class="alert alert-error"><?php _e("This payment form is invalid. Please check the settings and shortcode attributes", "fullstripe"); ?></p>
