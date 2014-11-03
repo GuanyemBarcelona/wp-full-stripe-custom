@@ -9,26 +9,68 @@
 
 Stripe.setPublishableKey(stripekey);
 
+var locale = {
+  ERROR_TERMS: {
+    ca: "Has d'acceptar les condicions generals per continuar.",
+    es: "Tienes que aceptar las condiciones generales para continuar."
+  },
+  ERROR_ADULT: {
+    ca: "Has de ser adult per continuar.",
+    es: "Tienes que ser adulto para continuar."
+  },
+  PER: {
+    ca: "/",
+    es: "/"
+  },
+  MONTH: {
+    ca: "mes",
+    es: "mes"
+  },
+};
+var config = {
+  LANGUAGE: 'ca'
+};
+
 jQuery(document).ready(function ($)
 {
+    config.LANGUAGE = $('html').attr('lang');
+
     $("#showLoading").hide();
     $("#showLoadingC").hide();
     var $err = $(".payment-errors");
 
     $('#payment-form').submit(function (e)
-    {
-        $("#showLoading").show();
+    {   
+        e.preventDefault();
 
-        $err.removeClass('alert alert-error');
-        $err.html("");
+        // acceptances
+        var error_msg = '';
+        var terms_check = $('#fullstripe_accept_terms');
+        var adult_check = $('#fullstripe_adult');
+        if (terms_check.is(':checked')){
+          if (adult_check.is(':checked') || adult_check.length == 0){
+            $("#showLoading").show();
 
-        var $form = $(this);
+            var $form = $(this);
 
-        // Disable the submit button
-        $form.find('button').prop('disabled', true);
+            // Disable the submit button
+            $form.find('button').prop('disabled', true);
 
-        Stripe.createToken($form, stripeResponseHandler);
-        return false;
+            Stripe.createToken($form, stripeResponseHandler);
+          }else{
+            error_msg = locale.ERROR_ADULT[config.LANGUAGE];
+          }
+        }else{
+          error_msg = locale.ERROR_TERMS[config.LANGUAGE];
+        }
+        if (error_msg == ''){
+          $err.removeClass('alert alert-error');
+        }else{
+          $err.addClass('alert alert-error');
+        }
+        $err.html(error_msg);
+
+        //location.hash = '#content';
     });
 
     var stripeResponseHandler = function (status, response)
@@ -79,11 +121,19 @@ jQuery(document).ready(function ($)
                     }
                     else
                     {
+                        // remove errors
+                        $('.control-group').removeClass('error');
                         // re-enable the submit button
                         $form.find('button').prop('disabled', false);
                         // show the errors on the form
                         $err.addClass('alert alert-error');
-                        $err.html(data.msg);
+                        var messages = "";
+                        for (var i in data.error_messages){
+                          var obj = data.error_messages[i];
+                          messages += obj.text + '<br>';
+                          $('[name^="' + obj.input + '"]').closest('.control-group').addClass('error');
+                        }
+                        $err.html(messages);
                         $err.fadeIn(500).fadeOut(500).fadeIn(500);
                     }
                 }
@@ -168,20 +218,18 @@ jQuery(document).ready(function ($)
     };
 
     var coupon = false;
-    $('#fullstripe_plan').change(function ()
+    $('[name="fullstripe_plan"]').change(function ()
     {
-        var plan = $("#fullstripe_plan").val();
+        var plan = $(this).val();
         var setupFee = parseInt($("#fullstripe_setupFee").val());
-        var option = $("#fullstripe_plan").find("option[value='" + plan + "']");
-        var count = parseInt(option.attr("data-interval-count"));
-        var amount = parseFloat(option.attr('data-amount') / 100);
-        var cur = option.attr("data-currency");
-        var str = "Plan is " + cur + amount + " per ";
-        if (count > 1)
-            str += count + " ";
-        str += option.attr('data-interval');
-        if (count > 1)
-            str += "s";
+        var count = parseInt($(this).attr("data-interval-count"));
+        var amount = parseFloat($(this).attr('data-amount') / 100);
+        var cur = $(this).attr("data-currency");
+        var interval = $(this).attr('data-interval');
+        var str = amount + cur + " " + locale.PER[config.LANGUAGE] + " ";
+        if (count > 1) str += count + " ";
+        str += locale[interval.toUpperCase()][config.LANGUAGE];
+        //if (count > 1) str += "s";
 
         if (coupon != false)
         {
@@ -206,7 +254,7 @@ jQuery(document).ready(function ($)
         }
 
         $(".fullstripe_plan_details").text(str);
-    }).change();
+    });
 
     $('#fullstripe_check_coupon_code').click(function (e)
     {
@@ -251,4 +299,84 @@ jQuery(document).ready(function ($)
         return false;
     });
 
+    var _getSpanishProvinces = function (){
+      return [
+              "Álava/Araba",
+              "Albacete",
+              "Alicante",
+              "Almería",
+              "Asturias/Asturies",
+              "Ávila",
+              "Badajoz",
+              "Barcelona",
+              "Burgos",
+              "Cáceres",
+              "Cádiz",
+              "Cantabria",
+              "Castellón/Castelló",
+              "Ceuta",
+              "Ciudad Real",
+              "Córdoba",
+              "Cuenca",
+              "Gerona/Girona",
+              "Granada",
+              "Guadalajara",
+              "Guipúzcoa/Gipuzkoa",
+              "Huelva",
+              "Huesca",
+              "Islas Baleares/Illes Balears",
+              "Jaén",
+              "La Coruña/A Coruña",
+              "La Rioja",
+              "Las Palmas",
+              "León",
+              "Lérida/Lleida",
+              "Lugo",
+              "Madrid",
+              "Málaga",
+              "Melilla",
+              "Murcia",
+              "Navarra/Nafarroa",
+              "Orense/Ourense",
+              "Palencia",
+              "Pontevedra",
+              "Salamanca",
+              "Santa Cruz de Tenerife",
+              "Segovia",
+              "Sevilla",
+              "Soria",
+              "Tarragona",
+              "Teruel",
+              "Toledo",
+              "Valencia/València",
+              "Valladolid",
+              "Vizcaya/Bizkaia",
+              "Zamora",
+              "Zaragoza"
+          ];
+    };
+    // Province select list: This is only valid for Spain
+    var province_input = $('#fullstripe_address_state');
+    if (province_input.length){
+      var provinces = _getSpanishProvinces();
+      for (var i in provinces){
+        var province_name = provinces[i];
+        var selected = '';
+        if (province_name == 'Barcelona') selected = ' selected="selected"';
+        province_input.append('<option value="'+province_name+'"'+selected+'>'+province_name+'</option>');
+      }
+    }
+
+    // document type selector
+    var doctype_selector = $('#doctype-selector');
+    if (doctype_selector.length){
+      var doctype_values = $('#doctype-values');
+      doctype_values.find('> div').hide();
+      doctype_selector.find('input[name="fullstripe_doctype"]').change(function(e){
+        var value = $(this).val();
+        doctype_values.find('> div').hide();
+        doctype_values.find('[data-type="'+value+'"]').fadeIn(300);
+      });
+    }
+    
 });
