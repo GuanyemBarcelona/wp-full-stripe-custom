@@ -151,8 +151,9 @@
       <div class="control-group">
           <label class="control-label fullstripe-form-label"><?php _e("Paying method", "wp-full-stripe"); ?></label>
           <div class="controls">
-            <select name="fullstripe_pay_method" id="fullstripe_pay_method" readonly>
+            <select name="fullstripe_pay_method" id="fullstripe_pay_method">
               <option value="card"><?php _e("Credit card", "wp-full-stripe"); ?></option>
+              <option value="debit"><?php _e("Direct debit payment", "wp-full-stripe"); ?></option>
             </select>
           </div>
       </div>
