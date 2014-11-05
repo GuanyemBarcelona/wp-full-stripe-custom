@@ -93,7 +93,7 @@ class MM_WPFS_Customer
         $doctype = $_POST['fullstripe_doctype'];
         if ($doctype != 'dni' && $doctype != 'passport'){
             $error_messages[] = array(
-              'text' => __('Please choose a document type', 'wp-full-stripe'),
+              'text' => __('Please choose a Type of document', 'wp-full-stripe'),
               'input' => 'fullstripe_doctype',
             );
         }else{
@@ -315,7 +315,7 @@ class MM_WPFS_Customer
         $doctype = $_POST['fullstripe_doctype'];
         if ($doctype != 'dni' && $doctype != 'passport'){
             $error_messages[] = array(
-              'text' => __('Please choose a document type', 'wp-full-stripe'),
+              'text' => __('Please choose a Type of document', 'wp-full-stripe'),
               'input' => 'fullstripe_doctype',
             );
         }else{
@@ -372,6 +372,30 @@ class MM_WPFS_Customer
         $state = isset($_POST['fullstripe_address_state']) ? sanitize_text_field($_POST['fullstripe_address_state']) : '';
         $zip = isset($_POST['fullstripe_address_zip']) ? sanitize_text_field($_POST['fullstripe_address_zip']) : '';
         $setupFee = $_POST['fullstripe_setupFee'];
+        if ($country == ''){
+          $error_messages[] = array(
+            'text' => __('Please enter a Country', 'wp-full-stripe'),
+            'input' => 'fullstripe_address_country',
+          );
+        }
+        if ($address1 == ''){
+          $error_messages[] = array(
+            'text' => __('Please enter a Billing Address', 'wp-full-stripe'),
+            'input' => 'fullstripe_address_line1',
+          );
+        }
+        if ($city == ''){
+          $error_messages[] = array(
+            'text' => __('Please enter a City', 'wp-full-stripe'),
+            'input' => 'fullstripe_address_city',
+          );
+        }
+        if ($zip == ''){
+          $error_messages[] = array(
+            'text' => __('Please enter a Zip/Postcode', 'wp-full-stripe'),
+            'input' => 'fullstripe_address_zip',
+          );
+        }
 
         $email = '';
         if (isset($_POST['fullstripe_email']))
