@@ -159,7 +159,6 @@
             <select name="fullstripe_pay_method" id="fullstripe_pay_method" readonly>
               <option value="card"><?php _e("Credit card", "wp-full-stripe"); ?></option>
             </select>
-            <span class="help-block"><?php _e("For now, you may only pay through our web by Credit card. If you'd like to pay through bank transfer, you can do so manually through the link on the top. Sorry for the inconvenience.", "wp-full-stripe"); ?></span>
           </div>
       </div>
       <?php if ( $formData->customAmount == 1 ): ?>
