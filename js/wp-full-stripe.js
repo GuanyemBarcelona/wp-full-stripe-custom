@@ -361,11 +361,11 @@ jQuery(document).ready(function ($)
       if (input.length){
         if (input.is('input')) input.replaceWith('<select name="fullstripe_address_state" id="fullstripe_address_state"></select>');
         var provinces = _getSpanishProvinces();
+        input = $('[name="fullstripe_address_state"]'); // redeclaring after the replace
         for (var i in provinces){
           var province_name = provinces[i];
           var selected = '';
           if (province_name == 'Barcelona') selected = ' selected="selected"';
-          console.log(input);
           input.append('<option value="'+province_name+'"'+selected+'>'+province_name+'</option>');
         }
       }
