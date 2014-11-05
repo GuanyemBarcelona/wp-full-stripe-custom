@@ -102,7 +102,8 @@ jQuery(document).ready(function ($)
                 success: function (data)
                 {
                     $("#showLoading").hide();
-
+                    // remove fields errors
+                    $('.control-group').removeClass('error');
                     if (data.success)
                     {
                         //clear form fields
@@ -121,8 +122,6 @@ jQuery(document).ready(function ($)
                     }
                     else
                     {
-                        // remove errors
-                        $('.control-group').removeClass('error');
                         // re-enable the submit button
                         $form.find('button').prop('disabled', false);
                         // show the errors on the form
