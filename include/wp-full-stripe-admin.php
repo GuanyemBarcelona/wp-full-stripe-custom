@@ -125,7 +125,6 @@ class MM_WPFS_Admin
         $custom = $_POST['form_custom'];
         $buttonTitle = $_POST['form_button_text'];
         $showButtonAmount = $_POST['form_button_amount'];
-        $showEmailInput = $_POST['form_show_email_input'];
         $showCustomInput = $_POST['form_include_custom_input'];
         $customInputTitle = isset($_POST['form_custom_input_label']) ? $_POST['form_custom_input_label'] : '';
         $doRedirect = $_POST['form_do_redirect'];
@@ -141,7 +140,6 @@ class MM_WPFS_Admin
             'customAmount' => $custom,
             'buttonTitle' => $buttonTitle,
             'showButtonAmount' => $showButtonAmount,
-            'showEmailInput' => $showEmailInput,
             'showCustomInput' => $showCustomInput,
             'customInputTitle' => $customInputTitle,
             'redirectOnSuccess' => $doRedirect,
@@ -167,7 +165,6 @@ class MM_WPFS_Admin
         $custom = $_POST['form_custom'];
         $buttonTitle = $_POST['form_button_text'];
         $showButtonAmount = $_POST['form_button_amount'];
-        $showEmailInput = $_POST['form_show_email_input'];
         $showCustomInput = $_POST['form_include_custom_input'];
         $customInputTitle = isset($_POST['form_custom_input_label']) ? $_POST['form_custom_input_label'] : '';
         $doRedirect = $_POST['form_do_redirect'];
@@ -183,7 +180,6 @@ class MM_WPFS_Admin
             'customAmount' => $custom,
             'buttonTitle' => $buttonTitle,
             'showButtonAmount' => $showButtonAmount,
-            'showEmailInput' => $showEmailInput,
             'showCustomInput' => $showCustomInput,
             'customInputTitle' => $customInputTitle,
             'redirectOnSuccess' => $doRedirect,

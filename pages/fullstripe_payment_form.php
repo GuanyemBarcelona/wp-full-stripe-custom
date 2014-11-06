@@ -10,7 +10,7 @@
 
     <img src="<?php echo plugins_url('/img/loader.gif', dirname(__FILE__)); ?>" alt="Loading..." id="showLoading"/>
     <p class="payment-errors"></p>
-    
+
     <fieldset>
       <h3 class="legend"><?php _e("Personal data", "wp-full-stripe"); ?></h3>
       <div class="row-fluid">
@@ -89,7 +89,6 @@
         </div>
       </div>
 
-      <?php if ( $formData->showEmailInput == 1 ): ?>
       <div class="row-fluid">
           <!-- Email -->
           <div class="control-group span6">
@@ -106,7 +105,6 @@
               </div>
           </div>
       </div>
-      <?php endif; ?>
 
       <?php if ( $formData->showAddress == 1 ): ?>
       <!-- Address -->

@@ -113,19 +113,6 @@ if ($valid)
                 </tr>
                 <tr valign="top">
                     <th scope="row">
-                        <label class="control-label">Include Email Address Field? </label>
-                    </th>
-                    <td>
-                        <label class="radio inline">
-                            <input type="radio" name="form_show_email_input" id="hide_email_input" value="0" <?php echo ($editForm->showEmailInput == '0') ? 'checked' : '' ?> > Hide
-                        </label> <label class="radio inline">
-                            <input type="radio" name="form_show_email_input" id="show_email_input" value="1" <?php echo ($editForm->showEmailInput == '1') ? 'checked' : '' ?> > Show
-                        </label>
-                        <p class="description">Should this payment form also ask for the customers email address?</p>
-                    </td>
-                </tr>
-                <tr valign="top">
-                    <th scope="row">
                         <label class="control-label">Send Email Receipt? </label>
                     </th>
                     <td>
