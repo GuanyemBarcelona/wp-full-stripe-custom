@@ -25,5 +25,8 @@ if (!class_exists('Stripe'))
     include_once('stripe-php/lib/Stripe.php');
 }
 
+//IBAN PHP library
+require_once('php-iban/php-iban.php');
+
 require_once dirname( __FILE__ ) . DIRECTORY_SEPARATOR . 'include' . DIRECTORY_SEPARATOR . 'wp-full-stripe-main.php';
 register_activation_hook( __FILE__, array( 'MM_WPFS', 'setup_db' ) );
