@@ -42,7 +42,6 @@ jQuery(document).ready(function ($)
         // acceptances
         var error_msg = '';
         var terms_check = $('#fullstripe_accept_terms');
-        var adult_check = $('#fullstripe_adult');
         if (terms_check.is(':checked')){
           $("#showLoading").show();
 
