@@ -90,7 +90,6 @@ class MM_WPFS_Database
         name VARCHAR(100) NOT NULL,
         formTitle VARCHAR(100) NOT NULL,
         plans VARCHAR(255) NOT NULL,
-        showCouponInput TINYINT(1) DEFAULT '0',
         showCustomInput TINYINT(1) DEFAULT '0',
         customInputTitle VARCHAR(100) NOT NULL DEFAULT 'Extra Information',
         redirectOnSuccess TINYINT(1) DEFAULT '0',

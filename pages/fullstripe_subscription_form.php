@@ -72,16 +72,6 @@
                 <span class="help-block"><?php _e("The CVV is a verification number that is generally 3 digit long and is printed on the back of your card.", "wp-full-stripe"); ?></span>
             </div>
         </div>
-        <?php if ( $formData->showCouponInput == 1 ): ?>
-        <div class="control-group">
-            <label class="control-label fullstripe-form-label"><?php _e("Coupon Code", "wp-full-stripe"); ?></label>
-            <div class="controls">
-                <input type="text" class="input-mini fullstripe-form-input" name="fullstripe_coupon_input" id="fullstripe_coupon_input">
-                <button id="fullstripe_check_coupon_code">Apply</button>
-                <img src="<?php echo plugins_url('/img/loader.gif', dirname(__FILE__)); ?>" alt="Loading..." id="showLoadingC"/>
-            </div>
-        </div>
-        <?php endif; ?>
       </div>
     </fieldset>
 
