@@ -83,12 +83,6 @@ class MM_WPFS_Customer
         }
 
         $telephone = isset($_POST['fullstripe_telephone']) ? sanitize_text_field($_POST['fullstripe_telephone']) : '';
-        /*if ($telephone == ''){
-            $error_messages[] = array(
-              'text' => __('Please enter a telephone number', 'wp-full-stripe'),
-              'input' => 'fullstripe_telephone',
-            );
-        }*/
 
         $doctype = $_POST['fullstripe_doctype'];
         if ($doctype != 'dni' && $doctype != 'passport'){
