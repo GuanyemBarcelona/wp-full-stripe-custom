@@ -126,19 +126,6 @@ if ($valid)
                 </tr>
                 <tr valign="top">
                     <th scope="row">
-                        <label class="control-label">Include Billing Address Field? </label>
-                    </th>
-                    <td>
-                        <label class="radio inline">
-                            <input type="radio" name="form_show_address_input" id="hide_address_input" value="0" <?php echo ($editForm->showAddress == '0') ? 'checked' : '' ?> > Hide
-                        </label> <label class="radio inline">
-                            <input type="radio" name="form_show_address_input" id="show_address_input" value="1" <?php echo ($editForm->showAddress == '1') ? 'checked' : '' ?> > Show
-                        </label>
-                        <p class="description">Should this payment form also ask for the customers billing address?</p>
-                    </td>
-                </tr>
-                <tr valign="top">
-                    <th scope="row">
                         <label class="control-label">Include Custom Input Field? </label>
                     </th>
                     <td>
@@ -234,19 +221,6 @@ if ($valid)
                             <input type="radio" name="form_include_coupon_input" id="include_coupon_input" value="1" <?php echo ($editForm->showCouponInput == '1') ? 'checked' : '' ?> > Yes
                         </label>
                         <p class="description">You can allow customers to input coupon codes for discounts. Must create the coupon in your Stripe account dashboard.</p>
-                    </td>
-                </tr>
-                <tr valign="top">
-                    <th scope="row">
-                        <label class="control-label">Include Billing Address Field? </label>
-                    </th>
-                    <td>
-                        <label class="radio inline">
-                            <input type="radio" name="form_show_address_input" id="hide_address_input" value="0" <?php echo ($editForm->showAddress == '0') ? 'checked' : '' ?> > Hide
-                        </label> <label class="radio inline">
-                            <input type="radio" name="form_show_address_input" id="show_address_input" value="1" <?php echo ($editForm->showAddress == '1') ? 'checked' : '' ?> > Show
-                        </label>
-                        <p class="description">Should this form also ask for the customers billing address?</p>
                     </td>
                 </tr>
                 <tr valign="top">

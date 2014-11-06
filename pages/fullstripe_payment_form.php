@@ -5,7 +5,6 @@
     <input type="hidden" name="isCustom" value="<?php echo $formData->customAmount; ?>"/>
     <input type="hidden" name="formDoRedirect" value="<?php echo $formData->redirectOnSuccess; ?>"/>
     <input type="hidden" name="formRedirectPostID" value="<?php echo $formData->redirectPostID; ?>"/>
-    <input type="hidden" name="showAddress" value="<?php echo $formData->showAddress; ?>"/>
     <input type="hidden" name="sendEmailReceipt" value="<?php echo $formData->sendEmailReceipt; ?>"/>
 
     <img src="<?php echo plugins_url('/img/loader.gif', dirname(__FILE__)); ?>" alt="Loading..." id="showLoading"/>
@@ -106,7 +105,6 @@
           </div>
       </div>
 
-      <?php if ( $formData->showAddress == 1 ): ?>
       <!-- Address -->
       <div class="control-group">
           <label class="control-label fullstripe-form-label"><?php _e("Billing Address Street", "wp-full-stripe"); ?> <span class="required-field">*</span></label>
@@ -145,7 +143,6 @@
             </div>
         </div>
       </div>
-      <?php endif; ?>
     </fieldset>
 
     <fieldset>

@@ -3,7 +3,6 @@
     <input type="hidden" name="formName" value="<?php echo $formData->name; ?>"/>
     <input type="hidden" name="formDoRedirect" value="<?php echo $formData->redirectOnSuccess; ?>"/>
     <input type="hidden" name="formRedirectPostID" value="<?php echo $formData->redirectPostID; ?>"/>
-    <input type="hidden" name="showAddress" value="<?php echo $formData->showAddress; ?>"/>
     <input type="hidden" name="fullstripe_setupFee" id="fullstripe_setupFee" value="<?php echo $formData->setupFee; ?>"/>
     
     <img src="<?php echo plugins_url('/img/loader.gif', dirname(__FILE__)); ?>" alt="Loading..." id="showLoading"/>
@@ -104,7 +103,6 @@
           </div>
       </div>
 
-      <?php if ( $formData->showAddress == 1 ): ?>
       <!-- Address -->
       <div class="control-group">
           <label class="control-label fullstripe-form-label"><?php _e("Billing Address Street", "wp-full-stripe"); ?> <span class="required-field">*</span></label>
@@ -141,8 +139,7 @@
                 <input type="text" style="width: 60px;"  name="fullstripe_address_zip" id="fullstripe_address_zip" class="fullstripe-form-input"><br/>
             </div>
         </div>
-      </div> 
-      <?php endif; ?>
+      </div>
     </fieldset>
 
     <fieldset>
