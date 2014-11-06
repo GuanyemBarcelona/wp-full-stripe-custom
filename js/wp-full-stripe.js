@@ -14,10 +14,6 @@ var locale = {
     ca: "Has d'acceptar les condicions generals per continuar.",
     es: "Tienes que aceptar las condiciones generales para continuar."
   },
-  ERROR_ADULT: {
-    ca: "Has de ser adult per continuar.",
-    es: "Tienes que ser adulto para continuar."
-  },
   PER: {
     ca: "/",
     es: "/"
@@ -48,18 +44,14 @@ jQuery(document).ready(function ($)
         var terms_check = $('#fullstripe_accept_terms');
         var adult_check = $('#fullstripe_adult');
         if (terms_check.is(':checked')){
-          if (adult_check.is(':checked') || adult_check.length == 0){
-            $("#showLoading").show();
+          $("#showLoading").show();
 
-            var $form = $(this);
+          var $form = $(this);
 
-            // Disable the submit button
-            $form.find('button').prop('disabled', true);
+          // Disable the submit button
+          $form.find('button').prop('disabled', true);
 
-            Stripe.createToken($form, stripeResponseHandler);
-          }else{
-            error_msg = locale.ERROR_ADULT[config.LANGUAGE];
-          }
+          Stripe.createToken($form, stripeResponseHandler);
         }else{
           error_msg = locale.ERROR_TERMS[config.LANGUAGE];
         }
