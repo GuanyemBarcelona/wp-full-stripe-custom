@@ -22,6 +22,18 @@ var locale = {
     ca: "mes",
     es: "mes"
   },
+  PAYMENT_METHOD_CREDIT_CARD: {
+    ca: "Targeta de crèdit",
+    es: "Tarjeta de crédito"
+  },
+  PAYMENT_METHOD_SPANISH_BANK_ACCOUNT: {
+    ca: "Domiciliació compta bancària (CCC)",
+    es: "Domiciliación cuenta bancaria (CCC)"
+  },
+  PAYMENT_METHOD_INTERNATIONAL_BANK_ACCOUNT: {
+    ca: "Domiciliació compta extrangera (IBAN)",
+    es: "Domiciliación cuenta extranjera (IBAN)"
+  },
 };
 var config = {
   LANGUAGE: 'ca'
@@ -50,7 +62,14 @@ jQuery(document).ready(function ($)
           // Disable the submit button
           $form.find('button').prop('disabled', true);
 
-          Stripe.createToken($form, stripeResponseHandler);
+          // payment method
+          $pay_method = $form.find('[name="fullstripe_pay_method"]');
+          if ($pay_method.val() == 'credit'){
+            Stripe.createToken($form, stripeResponseHandler);
+          }else{
+            // No Stripe payment Override
+            bankStartTransfer();
+          }
         }else{
           error_msg = locale.ERROR_TERMS[config.LANGUAGE];
         }
@@ -63,6 +82,10 @@ jQuery(document).ready(function ($)
 
         //location.hash = '#content';
     });
+
+    var bankStartTransfer = function(){
+      ajaxPayment();
+    };
 
     var stripeResponseHandler = function (status, response)
     {
@@ -83,52 +106,58 @@ jQuery(document).ready(function ($)
             var token = response.id;
             $form.append("<input type='hidden' name='stripeToken' value='" + token + "' />");
 
-            //post payment via ajax
-            $.ajax({
-                type: "POST",
-                url: ajaxurl,
-                data: $form.serialize(),
-                cache: false,
-                dataType: "json",
-                success: function (data)
-                {
-                    $("#showLoading").hide();
-                    // remove fields errors
-                    $('.control-group').removeClass('error');
-                    if (data.success)
-                    {
-                        //clear form fields
-                        $form.find('input:text, input:password').val('');
-                        //inform user of success
-                        $err.addClass('alert alert-success');
-                        $err.html(data.msg);
-                        $form.find('button').prop('disabled', false);
-                        if (data.redirect)
-                        {
-                            setTimeout(function ()
-                            {
-                                window.location = data.redirectURL;
-                            }, 1500);
-                        }
-                    }
-                    else
-                    {
-                        // re-enable the submit button
-                        $form.find('button').prop('disabled', false);
-                        // show the errors on the form
-                        $err.addClass('alert alert-error');
-                        var messages = "";
-                        for (var i in data.error_messages){
-                          var obj = data.error_messages[i];
-                          messages += obj.text + '<br>';
-                          $('[name^="' + obj.input + '"]').closest('.control-group').addClass('error');
-                        }
-                        $err.html(messages);
-                        $err.fadeIn(500).fadeOut(500).fadeIn(500);
-                    }
-                }
-            });
+            ajaxPayment();
         }
+    };
+
+    //post payment via ajax
+    var ajaxPayment = function(){
+      var $form = $('#payment-form');
+
+      $.ajax({
+          type: "POST",
+          url: ajaxurl,
+          data: $form.serialize(),
+          cache: false,
+          dataType: "json",
+          success: function (data)
+          {
+              $("#showLoading").hide();
+              // remove fields errors
+              $('.control-group').removeClass('error');
+              // re-enable the submit button
+              $form.find('button').prop('disabled', false);
+
+              if (data.success)
+              {
+                  //clear form fields
+                  $form.find('input:text, input:password').val('');
+                  //inform user of success
+                  $err.addClass('alert alert-success');
+                  $err.html(data.msg);
+                  if (data.redirect)
+                  {
+                      setTimeout(function ()
+                      {
+                          window.location = data.redirectURL;
+                      }, 1500);
+                  }
+              }
+              else
+              {
+                  // show the errors on the form
+                  $err.addClass('alert alert-error');
+                  var messages = "";
+                  for (var i in data.error_messages){
+                    var obj = data.error_messages[i];
+                    messages += obj.text + '<br>';
+                    $('[name^="' + obj.input + '"]').closest('.control-group').addClass('error');
+                  }
+                  $err.html(messages);
+                  $err.fadeIn(500).fadeOut(500).fadeIn(500);
+              }
+          }
+      });
     };
 
     $('#payment-form-style').submit(function (e)
@@ -288,6 +317,45 @@ jQuery(document).ready(function ($)
         }
         return false;
     });
+
+    var _getPaymentMethods = function(){
+      return {
+        'credit': locale.PAYMENT_METHOD_CREDIT_CARD[config.LANGUAGE],
+        'spanishaccount': locale.PAYMENT_METHOD_SPANISH_BANK_ACCOUNT[config.LANGUAGE],
+        'internationalaccount': locale.PAYMENT_METHOD_INTERNATIONAL_BANK_ACCOUNT[config.LANGUAGE]
+      };
+    };
+
+    // Payments method select
+    var fillPaymentsMehodSelect = function(){
+      var select = $('[name="fullstripe_pay_method"]');
+      if (select.length){
+        var methods = _getPaymentMethods();
+        for (var i in methods){
+          var method_name = methods[i];
+          var selected = '';
+          if (i == 'credit'){
+            selected = ' selected="selected"';
+          }else{
+            $('.payment-method[data-type="'+i+'"]').hide();
+          }
+          select.append('<option value="'+i+'"'+selected+'>'+method_name+'</option>');
+        }
+
+        select.change(function (){
+          var method_value = $(this).val();
+          $('.payment-method').each(function(i){
+            var type = $(this).attr('data-type');
+            if (type == method_value){
+              $(this).fadeIn(300);
+            }else{
+              $(this).hide();
+            }
+          });
+        });
+      }
+    };
+    fillPaymentsMehodSelect();
 
     var _getSpanishProvinces = function(){
       return [
