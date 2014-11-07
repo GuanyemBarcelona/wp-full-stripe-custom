@@ -424,13 +424,10 @@ class MM_WPFS_Customer
                 'documentType' => $doctype,
                 'documentID' => ($doctype == 'dni')? $dni : $passport,
                 'birthDate' => $birthdate->getTimestamp(),
+                'bankCCC' => $enc_bank_spain_ccc,
+                'bankIBAN' => $enc_bank_intl_iban,
+                'bankBIC' => $enc_bank_intl_bic,
               );
-              if ($is_payment_spain_bank){
-                $otherData['bankCCC'] = $enc_bank_spain_ccc;
-              }else if ($is_payment_intl_bank){
-                $otherData['bankIBAN'] = $enc_bank_intl_iban;
-                $otherData['bankBIC'] = $enc_bank_intl_bic;
-              }
               $phoney_payment = new stdClass();
               $phoney_payment->id = BANK_STRING_VALUE;
               $phoney_payment->description = BANK_STRING_VALUE;
@@ -749,6 +746,9 @@ class MM_WPFS_Customer
               if (!$is_payment_credit){
                 $rsa = new Crypt_RSA();
                 $rsa->loadKey(file_get_contents(WP_FULL_STRIPE_DIR . '/key/id_rsa.pub')); // public key
+                $enc_bank_spain_ccc = BANK_STRING_NOT_FILLED;
+                $enc_bank_intl_iban = BANK_STRING_NOT_FILLED;
+                $enc_bank_intl_bic = BANK_STRING_NOT_FILLED;
                 if ($is_payment_spain_bank){
                   $enc_bank_spain_ccc = $rsa->encrypt($bank_spain_ccc);
                 }else if ($is_payment_intl_bank){
@@ -769,14 +769,10 @@ class MM_WPFS_Customer
                 'documentType' => $doctype,
                 'documentID' => ($doctype == 'dni')? $dni : $passport,
                 'birthDate' => $birthdate->getTimestamp(),
+                'bankCCC' => $enc_bank_spain_ccc,
+                'bankIBAN' => $enc_bank_intl_iban,
+                'bankBIC' => $enc_bank_intl_bic,
               );
-              if ($is_payment_spain_bank){
-                $otherData['bankCCC'] = $enc_bank_spain_ccc;
-              }else if ($is_payment_intl_bank){
-                $otherData['bankIBAN'] = $enc_bank_intl_iban;
-                $otherData['bankBIC'] = $enc_bank_intl_bic;
-              }
-
               $phoney_payment = new stdClass();
               $phoney_payment->id = BANK_STRING_VALUE;
               $phoney_payment->email = BANK_STRING_VALUE;
