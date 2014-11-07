@@ -441,6 +441,8 @@ class MM_WPFS_Customer
               $phoney_payment->fee = BANK_STRING_VALUE;
               $phoney_payment->created = mktime();
               $this->db->fullstripe_insert_payment($phoney_payment, $address, BANK_STRING_VALUE, $otherData);
+
+              $return = array('success' => true, 'msg' => __("Payment Successful!", "wp-full-stripe"));
             }
             
         }
@@ -775,15 +777,15 @@ class MM_WPFS_Customer
                 $otherData['bankIBAN'] = $enc_bank_intl_iban;
                 $otherData['bankBIC'] = $enc_bank_intl_bic;
               }
+
               $phoney_payment = new stdClass();
               $phoney_payment->id = BANK_STRING_VALUE;
-              $phoney_payment->description = BANK_STRING_VALUE;
-              $phoney_payment->paid = BANK_STRING_VALUE;
-              $phoney_payment->livemode = BANK_STRING_VALUE;
-              $phoney_payment->amount = BANK_STRING_VALUE;
-              $phoney_payment->fee = BANK_STRING_VALUE;
+              $phoney_payment->email = BANK_STRING_VALUE;
+              $customer->subscription->plan->id = BANK_STRING_VALUE;
               $phoney_payment->created = mktime();
-              $this->db->fullstripe_insert_payment($phoney_payment, $address, BANK_STRING_VALUE, $otherData);
+              $this->db->fullstripe_insert_subscriber($phoney_payment, $name, $address, $otherData);
+
+              $return = array('success' => true, 'msg' => __("Payment Successful. Thanks for subscribing!", "wp-full-stripe"));
             }
         }
 
