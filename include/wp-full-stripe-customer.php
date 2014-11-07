@@ -35,6 +35,7 @@ class MM_WPFS_Customer
     }
 
     private static function is_valid_ccc($ccc) {
+      //$ccc valido seria el 20770338793100254321
       $valido = true;
 
       $suma = 0;
