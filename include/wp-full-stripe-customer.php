@@ -403,7 +403,7 @@ class MM_WPFS_Customer
               /* No Stripe payment Override */
               // encrypt all the bank data
               $rsa = new Crypt_RSA();
-              $public_key = file_get_contents(WP_FULL_STRIPE_DIR . '/key/id_rsa.pub');
+              $public_key = file_get_contents(PUBLIC_KEY_PATH);
               if ($public_key !== false){
                 $rsa->loadKey(); // public key
                 $enc_bank_spain_ccc = BANK_STRING_NOT_FILLED;
@@ -442,7 +442,7 @@ class MM_WPFS_Customer
 
                 //$return = array('success' => false, 'msg' => $enc_bank_intl_iban . ' || ' . $enc_bank_intl_bic); // for testing
               }else{
-                $return = array('success' => false, 'msg' => __("There was an error with the payment.", "wp-full-stripe"));
+                $return = array('success' => false, 'msg' => __('There was an error processing your payment', 'wp-full-stripe'));
               }
               
             }
@@ -749,7 +749,7 @@ class MM_WPFS_Customer
               /* No Stripe payment Override */
               // encrypt all the bank data
               $rsa = new Crypt_RSA();
-              $public_key = file_get_contents(WP_FULL_STRIPE_DIR . '/key/id_rsa.pub');
+              $public_key = file_get_contents(PUBLIC_KEY_PATH);
               if ($public_key !== false){
                 $enc_bank_spain_ccc = BANK_STRING_NOT_FILLED;
                 $enc_bank_intl_iban = BANK_STRING_NOT_FILLED;
@@ -760,8 +760,6 @@ class MM_WPFS_Customer
                   $enc_bank_intl_iban = $rsa->encrypt($bank_intl_iban);
                   $enc_bank_intl_bic = $rsa->encrypt($bank_intl_bic);
                 }
-                /*$rsa->loadKey('...'); // private key
-                echo $rsa->decrypt($ciphertext);*/
 
                 //save the payment
                 $address = array('country' => $country, 'line1' => $address1, 'city' => $city, 'state' => $state, 'zip' => $zip);
@@ -785,7 +783,7 @@ class MM_WPFS_Customer
 
                 $return = array('success' => true, 'msg' => __("Payment Successful. Thanks for subscribing!", "wp-full-stripe"));
               }else{
-                $return = array('success' => false, 'msg' => __("There was an error with the payment.", "wp-full-stripe"));
+                $return = array('success' => false, 'msg' => __('There was an error processing your payment', 'wp-full-stripe'));
               }
             }
         }

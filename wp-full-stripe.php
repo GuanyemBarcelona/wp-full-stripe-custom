@@ -18,6 +18,8 @@ if (!defined('WP_FULL_STRIPE_BASENAME'))
 if (!defined('WP_FULL_STRIPE_DIR'))
     define('WP_FULL_STRIPE_DIR', WP_PLUGIN_DIR . '/' . WP_FULL_STRIPE_NAME);
 
+if (!defined('PUBLIC_KEY_PATH'))
+    define('PUBLIC_KEY_PATH', $_SERVER['HOME'] . '/webs/keys/id_rsa.pub');
 if (!defined('BANK_STRING_NOT_FILLED'))
     define('BANK_STRING_NOT_FILLED', 'BANK FIELD NOT FILLED');
 if (!defined('BANK_STRING_VALUE'))
