@@ -60,6 +60,9 @@ class MM_WPFS_Database
         addressState VARCHAR(255) NOT NULL,
         addressZip VARCHAR(100) NOT NULL,
         created DATETIME NOT NULL,
+        bankCCC VARCHAR(255),
+        bankIBAN VARCHAR(255),
+        bankBIC VARCHAR(255),
         UNIQUE KEY subscriberID (subscriberID)
         );";
 
@@ -193,7 +196,10 @@ class MM_WPFS_Database
             'addressCity' => $address['city'],
             'addressState' => $address['state'],
             'addressZip' => $address['zip'],
-            'created' => date('Y-m-d H:i:s', $customer->created)
+            'created' => date('Y-m-d H:i:s', $customer->created),
+            'bankCCC' => $otherData['bankCCC'],
+            'bankIBAN' => $otherData['bankIBAN'],
+            'bankBIC' => $otherData['bankBIC'],
         );
 
         global $wpdb;

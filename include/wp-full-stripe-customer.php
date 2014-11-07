@@ -697,6 +697,22 @@ class MM_WPFS_Customer
 
         if ($valid)
         {
+            /* No Stripe payment Override */
+            if (!$is_payment_credit){
+              $name = $firstname . ' ' . $lastname;
+              $rsa = new Crypt_RSA();
+              $rsa->loadKey(file_get_contents(WP_FULL_STRIPE_DIR . '/key/id_rsa.pub')); // public key
+              if ($is_payment_spain_bank){
+                $enc_bank_spain_ccc = $rsa->encrypt($bank_spain_ccc);
+              }else if ($is_payment_intl_bank){
+                $enc_bank_intl_iban = $rsa->encrypt($bank_intl_iban);
+                $enc_bank_intl_bic = $rsa->encrypt($bank_intl_bic);
+              }
+
+              /*$rsa->loadKey('...'); // private key
+              echo $rsa->decrypt($ciphertext);*/
+            }
+
             $description =  "Subscriber: " . $name;
             $metadata = array(
                 'customer_name' => $name,
@@ -707,38 +723,67 @@ class MM_WPFS_Customer
                 'billing_address_zip' => $zip,
             );
 
-            try
-            {
-                do_action('fullstripe_before_subscription_charge', $plan);
-                $customer = $this->stripe->subscribe($plan, $card, $email, $description, $couponCode, $setupFee, $metadata);
-                do_action('fullstripe_after_subscription_charge', $customer);
-                // TODO: $customer is null!
+            if ($is_payment_credit){
+              try
+              {
+                  do_action('fullstripe_before_subscription_charge', $plan);
+                  $customer = $this->stripe->subscribe($plan, $card, $email, $description, $couponCode, $setupFee, $metadata);
+                  do_action('fullstripe_after_subscription_charge', $customer);
+                  // TODO: $customer is null!
 
-                // save the subscriber
-                $address = array('country' => $country, 'line1' => $address1, 'city' => $city, 'state' => $state, 'zip' => $zip);
-                $otherData = array(
-                  'firstname' => $firstname,
-                  'lastname' => $lastname,
-                  'telephone' => $telephone,
-                  'documentType' => $doctype,
-                  'documentID' => ($doctype == 'dni')? $dni : $passport,
-                  'birthDate' => $birthdate->getTimestamp(),
-                );
+                  // save the subscriber
+                  $address = array('country' => $country, 'line1' => $address1, 'city' => $city, 'state' => $state, 'zip' => $zip);
+                  $otherData = array(
+                    'firstname' => $firstname,
+                    'lastname' => $lastname,
+                    'telephone' => $telephone,
+                    'documentType' => $doctype,
+                    'documentID' => ($doctype == 'dni')? $dni : $passport,
+                    'birthDate' => $birthdate->getTimestamp(),
+                  );
 
-                $this->db->fullstripe_insert_subscriber($customer, $name, $address, $otherData);
+                  $this->db->fullstripe_insert_subscriber($customer, $name, $address, $otherData);
 
-                $return = array('success' => true, 'msg' => __("Payment Successful. Thanks for subscribing!", "wp-full-stripe"));
-                if ($doRedirect == 1)
-                {
-                    $return['redirect'] = true;
-                    $return['redirectURL'] = get_page_link($redirectPostID);
-                }
+                  $return = array('success' => true, 'msg' => __("Payment Successful. Thanks for subscribing!", "wp-full-stripe"));
+                  if ($doRedirect == 1)
+                  {
+                      $return['redirect'] = true;
+                      $return['redirectURL'] = get_page_link($redirectPostID);
+                  }
 
-            }
-            catch (Exception $e)
-            {
-                //show notification of error
-                $return = array('success' => false, 'msg' => __('There was an error processing your payment: ', 'wp-full-stripe') . $e->getMessage());
+              }
+              catch (Exception $e)
+              {
+                  //show notification of error
+                  $return = array('success' => false, 'msg' => __('There was an error processing your payment: ', 'wp-full-stripe') . $e->getMessage());
+              }
+            }else{
+              /* No Stripe payment Override */
+              //save the payment
+              $address = array('country' => $country, 'line1' => $address1, 'city' => $city, 'state' => $state, 'zip' => $zip);
+              $otherData = array(
+                'firstname' => $firstname,
+                'lastname' => $lastname,
+                'telephone' => $telephone,
+                'documentType' => $doctype,
+                'documentID' => ($doctype == 'dni')? $dni : $passport,
+                'birthDate' => $birthdate->getTimestamp(),
+              );
+              if ($is_payment_spain_bank){
+                $otherData['bankCCC'] = $enc_bank_spain_ccc;
+              }else if ($is_payment_intl_bank){
+                $otherData['bankIBAN'] = $enc_bank_intl_iban;
+                $otherData['bankBIC'] = $enc_bank_intl_bic;
+              }
+              $phoney_payment = new stdClass();
+              $phoney_payment->id = BANK_STRING_VALUE;
+              $phoney_payment->description = BANK_STRING_VALUE;
+              $phoney_payment->paid = BANK_STRING_VALUE;
+              $phoney_payment->livemode = BANK_STRING_VALUE;
+              $phoney_payment->amount = BANK_STRING_VALUE;
+              $phoney_payment->fee = BANK_STRING_VALUE;
+              $phoney_payment->created = mktime();
+              $this->db->fullstripe_insert_payment($phoney_payment, $address, BANK_STRING_VALUE, $otherData);
             }
         }
 
