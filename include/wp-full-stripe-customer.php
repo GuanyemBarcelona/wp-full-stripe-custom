@@ -439,10 +439,10 @@ class MM_WPFS_Customer
               $phoney_payment->amount = $amount;
               $phoney_payment->fee = BANK_STRING_VALUE;
               $phoney_payment->created = mktime();
-              //$this->db->fullstripe_insert_payment($phoney_payment, $address, BANK_STRING_VALUE, $otherData);
-              //$return = array('success' => true, 'msg' => __("Payment Successful!", "wp-full-stripe"));
+              $this->db->fullstripe_insert_payment($phoney_payment, $address, BANK_STRING_VALUE, $otherData);
+              $return = array('success' => true, 'msg' => __("Payment Successful!", "wp-full-stripe"));
 
-              $return = array('success' => false, 'msg' => $enc_bank_intl_iban . ' || ' . $enc_bank_intl_bic);
+              //$return = array('success' => false, 'msg' => $enc_bank_intl_iban . ' || ' . $enc_bank_intl_bic); // for testing
             }
             
         }
@@ -759,7 +759,7 @@ class MM_WPFS_Customer
                 /*$rsa->loadKey('...'); // private key
                 echo $rsa->decrypt($ciphertext);*/
               }
-              
+
               //save the payment
               $address = array('country' => $country, 'line1' => $address1, 'city' => $city, 'state' => $state, 'zip' => $zip);
               $otherData = array(
