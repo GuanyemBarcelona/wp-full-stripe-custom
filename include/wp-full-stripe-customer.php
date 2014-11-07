@@ -35,7 +35,7 @@ class MM_WPFS_Customer
     }
 
     private static function is_valid_ccc($ccc) {
-      //$ccc valido seria el 20770338793100254321
+      //$ccc valido seria el 2077 0338 79 3100254321
       $valido = true;
 
       $suma = 0;
@@ -403,44 +403,48 @@ class MM_WPFS_Customer
               /* No Stripe payment Override */
               // encrypt all the bank data
               $rsa = new Crypt_RSA();
-              $rsa->loadKey(file_get_contents(WP_FULL_STRIPE_DIR . '/key/id_rsa.pub')); // public key
-              $enc_bank_spain_ccc = BANK_STRING_NOT_FILLED;
-              $enc_bank_intl_iban = BANK_STRING_NOT_FILLED;
-              $enc_bank_intl_bic = BANK_STRING_NOT_FILLED;
-              if ($is_payment_spain_bank){
-                $enc_bank_spain_ccc = $rsa->encrypt($bank_spain_ccc);
-              }else if ($is_payment_intl_bank){
-                $enc_bank_intl_iban = $rsa->encrypt($bank_intl_iban);
-                $enc_bank_intl_bic = $rsa->encrypt($bank_intl_bic);
+              $public_key = file_get_contents(WP_FULL_STRIPE_DIR . '/key/id_rsa.pub');
+              if ($public_key !== false){
+                $rsa->loadKey(); // public key
+                $enc_bank_spain_ccc = BANK_STRING_NOT_FILLED;
+                $enc_bank_intl_iban = BANK_STRING_NOT_FILLED;
+                $enc_bank_intl_bic = BANK_STRING_NOT_FILLED;
+                if ($is_payment_spain_bank){
+                  $enc_bank_spain_ccc = $rsa->encrypt($bank_spain_ccc);
+                }else if ($is_payment_intl_bank){
+                  $enc_bank_intl_iban = $rsa->encrypt($bank_intl_iban);
+                  $enc_bank_intl_bic = $rsa->encrypt($bank_intl_bic);
+                }
+
+                //save the payment
+                $address = array('country' => $country, 'line1' => $address1, 'city' => $city, 'state' => $state, 'zip' => $zip);
+                $otherData = array(
+                  'firstname' => $firstname,
+                  'lastname' => $lastname,
+                  'telephone' => $telephone,
+                  'documentType' => $doctype,
+                  'documentID' => ($doctype == 'dni')? $dni : $passport,
+                  'birthDate' => $birthdate->getTimestamp(),
+                  'bankCCC' => $enc_bank_spain_ccc,
+                  'bankIBAN' => $enc_bank_intl_iban,
+                  'bankBIC' => $enc_bank_intl_bic,
+                );
+                $phoney_payment = new stdClass();
+                $phoney_payment->id = BANK_STRING_VALUE;
+                $phoney_payment->description = BANK_STRING_VALUE;
+                $phoney_payment->paid = BANK_STRING_VALUE;
+                $phoney_payment->livemode = BANK_STRING_VALUE;
+                $phoney_payment->amount = $amount;
+                $phoney_payment->fee = BANK_STRING_VALUE;
+                $phoney_payment->created = mktime();
+                $this->db->fullstripe_insert_payment($phoney_payment, $address, BANK_STRING_VALUE, $otherData);
+                $return = array('success' => true, 'msg' => __("Payment Successful!", "wp-full-stripe"));
+
+                //$return = array('success' => false, 'msg' => $enc_bank_intl_iban . ' || ' . $enc_bank_intl_bic); // for testing
+              }else{
+                $return = array('success' => false, 'msg' => __("There was an error with the payment.", "wp-full-stripe"));
               }
-              /*$rsa->loadKey('...'); // private key
-              echo $rsa->decrypt($ciphertext);*/
-
-              //save the payment
-              $address = array('country' => $country, 'line1' => $address1, 'city' => $city, 'state' => $state, 'zip' => $zip);
-              $otherData = array(
-                'firstname' => $firstname,
-                'lastname' => $lastname,
-                'telephone' => $telephone,
-                'documentType' => $doctype,
-                'documentID' => ($doctype == 'dni')? $dni : $passport,
-                'birthDate' => $birthdate->getTimestamp(),
-                'bankCCC' => $enc_bank_spain_ccc,
-                'bankIBAN' => $enc_bank_intl_iban,
-                'bankBIC' => $enc_bank_intl_bic,
-              );
-              $phoney_payment = new stdClass();
-              $phoney_payment->id = BANK_STRING_VALUE;
-              $phoney_payment->description = BANK_STRING_VALUE;
-              $phoney_payment->paid = BANK_STRING_VALUE;
-              $phoney_payment->livemode = BANK_STRING_VALUE;
-              $phoney_payment->amount = $amount;
-              $phoney_payment->fee = BANK_STRING_VALUE;
-              $phoney_payment->created = mktime();
-              $this->db->fullstripe_insert_payment($phoney_payment, $address, BANK_STRING_VALUE, $otherData);
-              $return = array('success' => true, 'msg' => __("Payment Successful!", "wp-full-stripe"));
-
-              //$return = array('success' => false, 'msg' => $enc_bank_intl_iban . ' || ' . $enc_bank_intl_bic); // for testing
+              
             }
             
         }
@@ -745,40 +749,44 @@ class MM_WPFS_Customer
               /* No Stripe payment Override */
               // encrypt all the bank data
               $rsa = new Crypt_RSA();
-              $rsa->loadKey(file_get_contents(WP_FULL_STRIPE_DIR . '/key/id_rsa.pub')); // public key
-              $enc_bank_spain_ccc = BANK_STRING_NOT_FILLED;
-              $enc_bank_intl_iban = BANK_STRING_NOT_FILLED;
-              $enc_bank_intl_bic = BANK_STRING_NOT_FILLED;
-              if ($is_payment_spain_bank){
-                $enc_bank_spain_ccc = $rsa->encrypt($bank_spain_ccc);
-              }else if ($is_payment_intl_bank){
-                $enc_bank_intl_iban = $rsa->encrypt($bank_intl_iban);
-                $enc_bank_intl_bic = $rsa->encrypt($bank_intl_bic);
+              $public_key = file_get_contents(WP_FULL_STRIPE_DIR . '/key/id_rsa.pub');
+              if ($public_key !== false){
+                $enc_bank_spain_ccc = BANK_STRING_NOT_FILLED;
+                $enc_bank_intl_iban = BANK_STRING_NOT_FILLED;
+                $enc_bank_intl_bic = BANK_STRING_NOT_FILLED;
+                if ($is_payment_spain_bank){
+                  $enc_bank_spain_ccc = $rsa->encrypt($bank_spain_ccc);
+                }else if ($is_payment_intl_bank){
+                  $enc_bank_intl_iban = $rsa->encrypt($bank_intl_iban);
+                  $enc_bank_intl_bic = $rsa->encrypt($bank_intl_bic);
+                }
+                /*$rsa->loadKey('...'); // private key
+                echo $rsa->decrypt($ciphertext);*/
+
+                //save the payment
+                $address = array('country' => $country, 'line1' => $address1, 'city' => $city, 'state' => $state, 'zip' => $zip);
+                $otherData = array(
+                  'firstname' => $firstname,
+                  'lastname' => $lastname,
+                  'telephone' => $telephone,
+                  'documentType' => $doctype,
+                  'documentID' => ($doctype == 'dni')? $dni : $passport,
+                  'birthDate' => $birthdate->getTimestamp(),
+                  'bankCCC' => $enc_bank_spain_ccc,
+                  'bankIBAN' => $enc_bank_intl_iban,
+                  'bankBIC' => $enc_bank_intl_bic,
+                );
+                $phoney_payment = new stdClass();
+                $phoney_payment->id = BANK_STRING_VALUE;
+                $phoney_payment->email = BANK_STRING_VALUE;
+                $customer->subscription->plan->id = BANK_STRING_VALUE;
+                $phoney_payment->created = mktime();
+                $this->db->fullstripe_insert_subscriber($phoney_payment, $name, $address, $otherData);
+
+                $return = array('success' => true, 'msg' => __("Payment Successful. Thanks for subscribing!", "wp-full-stripe"));
+              }else{
+                $return = array('success' => false, 'msg' => __("There was an error with the payment.", "wp-full-stripe"));
               }
-              /*$rsa->loadKey('...'); // private key
-              echo $rsa->decrypt($ciphertext);*/
-
-              //save the payment
-              $address = array('country' => $country, 'line1' => $address1, 'city' => $city, 'state' => $state, 'zip' => $zip);
-              $otherData = array(
-                'firstname' => $firstname,
-                'lastname' => $lastname,
-                'telephone' => $telephone,
-                'documentType' => $doctype,
-                'documentID' => ($doctype == 'dni')? $dni : $passport,
-                'birthDate' => $birthdate->getTimestamp(),
-                'bankCCC' => $enc_bank_spain_ccc,
-                'bankIBAN' => $enc_bank_intl_iban,
-                'bankBIC' => $enc_bank_intl_bic,
-              );
-              $phoney_payment = new stdClass();
-              $phoney_payment->id = BANK_STRING_VALUE;
-              $phoney_payment->email = BANK_STRING_VALUE;
-              $customer->subscription->plan->id = BANK_STRING_VALUE;
-              $phoney_payment->created = mktime();
-              $this->db->fullstripe_insert_subscriber($phoney_payment, $name, $address, $otherData);
-
-              $return = array('success' => true, 'msg' => __("Payment Successful. Thanks for subscribing!", "wp-full-stripe"));
             }
         }
 
