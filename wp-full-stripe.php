@@ -18,6 +18,8 @@ if (!defined('WP_FULL_STRIPE_BASENAME'))
 if (!defined('WP_FULL_STRIPE_DIR'))
     define('WP_FULL_STRIPE_DIR', WP_PLUGIN_DIR . '/' . WP_FULL_STRIPE_NAME);
 
+if (!defined('BANK_STRING_VALUE'))
+    define('BANK_STRING_VALUE', 'BANK_ACCOUNT_PAYMENT');
 
 //Stripe PHP library
 if (!class_exists('Stripe'))
@@ -26,6 +28,7 @@ if (!class_exists('Stripe'))
 }
 
 //RSA PHP library
+require_once('lib/Math/BigInteger.php');
 require_once('lib/Crypt/RSA.php');
 //IBAN PHP library
 require_once('lib/php-iban/php-iban.php');
