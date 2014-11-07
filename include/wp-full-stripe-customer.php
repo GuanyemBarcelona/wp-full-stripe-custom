@@ -37,7 +37,6 @@ class MM_WPFS_Customer
     function fullstripe_payment_charge()
     {
         //get POST data from form
-        $valid = true;
         $card = $_POST['stripeToken'];
         $name = sanitize_text_field($_POST['fullstripe_name']); // card holder's name
         $amount = $_POST['amount'];
@@ -49,6 +48,7 @@ class MM_WPFS_Customer
         $sendReceipt = $_POST['sendEmailReceipt'];
         $options = get_option('fullstripe_options');
 
+        $valid = true;
         $error_messages = [];
 
         if ($isCustom == 1)
@@ -266,7 +266,7 @@ class MM_WPFS_Customer
 
     function fullstripe_subscription_charge()
     {
-        $valid = true;
+        //get POST data from form
         $card = $_POST['stripeToken'];
         $name = $_POST['fullstripe_name'];
         $plan = isset($_POST['fullstripe_plan']) ? $_POST['fullstripe_plan'] : '';
@@ -274,6 +274,7 @@ class MM_WPFS_Customer
         $doRedirect = $_POST['formDoRedirect'];
         $redirectPostID = $_POST['formRedirectPostID'];
 
+        $valid = true;
         $error_messages = [];
 
         if ($plan == ''){
