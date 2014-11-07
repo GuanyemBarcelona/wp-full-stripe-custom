@@ -16,7 +16,7 @@ class MM_WPFS
     private $database = null;
     private $stripe = null;
 
-    const VERSION = '2.9.6.6';
+    const VERSION = '2.9.6.7';
 
     public static function getInstance()
     {

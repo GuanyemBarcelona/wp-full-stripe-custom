@@ -31,6 +31,9 @@ class MM_WPFS_Database
         addressZip VARCHAR(100) NOT NULL,
         created DATETIME NOT NULL,
         stripeCustomerID VARCHAR(100),
+        bankCCC VARCHAR(255),
+        bankIBAN VARCHAR(255),
+        bankBIC VARCHAR(255),
         UNIQUE KEY paymentID (paymentID)
         );";
 
@@ -163,7 +166,10 @@ class MM_WPFS_Database
             'addressState' => $address['state'],
             'addressZip' => $address['zip'],
             'created' => date('Y-m-d H:i:s', $payment->created),
-            'stripeCustomerID' => $customerID
+            'stripeCustomerID' => $customerID,
+            'bankCCC' => $otherData['bankCCC'],
+            'bankIBAN' => $otherData['bankIBAN'],
+            'bankBIC' => $otherData['bankBIC'],
         );
 
         $wpdb->insert($wpdb->prefix . 'fullstripe_payments', apply_filters('fullstripe_insert_payment_data', $data));
