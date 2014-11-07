@@ -17,8 +17,7 @@
           <label class="control-label fullstripe-form-label"><?php _e("Paying method", "wp-full-stripe"); ?></label>
           <div class="controls">
             <select name="fullstripe_pay_method" id="fullstripe_pay_method">
-              <option value="card"><?php _e("Credit card", "wp-full-stripe"); ?></option>
-              <option value="debit"><?php _e("Direct debit payment", "wp-full-stripe"); ?></option>
+              
             </select>
           </div>
       </div>
@@ -40,8 +39,10 @@
               <?php endforeach; ?>
           </div>
       </div>
-      
+
       <?php include(WP_FULL_STRIPE_DIR . '/include/card_fields.php'); ?>
+      <?php include(WP_FULL_STRIPE_DIR . '/include/bank-spanish-fields.php'); ?>
+      <?php include(WP_FULL_STRIPE_DIR . '/include/bank-international-fields.php'); ?>
     </fieldset>
 
     <h3 class="total"><?php _e("Total", "wp-full-stripe"); ?>: <span class="value fullstripe_plan_details"></span></h3>
