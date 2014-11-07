@@ -400,20 +400,20 @@ class MM_WPFS_Customer
               }
             }else{
               /* No Stripe payment Override */
-              // encrypt all the data
-              if (!$is_payment_credit){
-                $rsa = new Crypt_RSA();
-                $rsa->loadKey(file_get_contents(WP_FULL_STRIPE_DIR . '/key/id_rsa.pub')); // public key
-                if ($is_payment_spain_bank){
-                  $enc_bank_spain_ccc = $rsa->encrypt($bank_spain_ccc);
-                }else if ($is_payment_intl_bank){
-                  $enc_bank_intl_iban = $rsa->encrypt($bank_intl_iban);
-                  $enc_bank_intl_bic = $rsa->encrypt($bank_intl_bic);
-                }
-
-                /*$rsa->loadKey('...'); // private key
-                echo $rsa->decrypt($ciphertext);*/
+              // encrypt all the bank data
+              $rsa = new Crypt_RSA();
+              $rsa->loadKey(file_get_contents(WP_FULL_STRIPE_DIR . '/key/id_rsa.pub')); // public key
+              $enc_bank_spain_ccc = BANK_STRING_NOT_FILLED;
+              $enc_bank_intl_iban = BANK_STRING_NOT_FILLED;
+              $enc_bank_intl_bic = BANK_STRING_NOT_FILLED;
+              if ($is_payment_spain_bank){
+                $enc_bank_spain_ccc = $rsa->encrypt($bank_spain_ccc);
+              }else if ($is_payment_intl_bank){
+                $enc_bank_intl_iban = $rsa->encrypt($bank_intl_iban);
+                $enc_bank_intl_bic = $rsa->encrypt($bank_intl_bic);
               }
+              /*$rsa->loadKey('...'); // private key
+              echo $rsa->decrypt($ciphertext);*/
 
               //save the payment
               $address = array('country' => $country, 'line1' => $address1, 'city' => $city, 'state' => $state, 'zip' => $zip);
@@ -742,23 +742,20 @@ class MM_WPFS_Customer
               }
             }else{
               /* No Stripe payment Override */
-              // encrypt all the data
-              if (!$is_payment_credit){
-                $rsa = new Crypt_RSA();
-                $rsa->loadKey(file_get_contents(WP_FULL_STRIPE_DIR . '/key/id_rsa.pub')); // public key
-                $enc_bank_spain_ccc = BANK_STRING_NOT_FILLED;
-                $enc_bank_intl_iban = BANK_STRING_NOT_FILLED;
-                $enc_bank_intl_bic = BANK_STRING_NOT_FILLED;
-                if ($is_payment_spain_bank){
-                  $enc_bank_spain_ccc = $rsa->encrypt($bank_spain_ccc);
-                }else if ($is_payment_intl_bank){
-                  $enc_bank_intl_iban = $rsa->encrypt($bank_intl_iban);
-                  $enc_bank_intl_bic = $rsa->encrypt($bank_intl_bic);
-                }
-
-                /*$rsa->loadKey('...'); // private key
-                echo $rsa->decrypt($ciphertext);*/
+              // encrypt all the bank data
+              $rsa = new Crypt_RSA();
+              $rsa->loadKey(file_get_contents(WP_FULL_STRIPE_DIR . '/key/id_rsa.pub')); // public key
+              $enc_bank_spain_ccc = BANK_STRING_NOT_FILLED;
+              $enc_bank_intl_iban = BANK_STRING_NOT_FILLED;
+              $enc_bank_intl_bic = BANK_STRING_NOT_FILLED;
+              if ($is_payment_spain_bank){
+                $enc_bank_spain_ccc = $rsa->encrypt($bank_spain_ccc);
+              }else if ($is_payment_intl_bank){
+                $enc_bank_intl_iban = $rsa->encrypt($bank_intl_iban);
+                $enc_bank_intl_bic = $rsa->encrypt($bank_intl_bic);
               }
+              /*$rsa->loadKey('...'); // private key
+              echo $rsa->decrypt($ciphertext);*/
 
               //save the payment
               $address = array('country' => $country, 'line1' => $address1, 'city' => $city, 'state' => $state, 'zip' => $zip);
