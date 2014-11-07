@@ -31,9 +31,9 @@ class MM_WPFS_Database
         addressZip VARCHAR(100) NOT NULL,
         created DATETIME NOT NULL,
         stripeCustomerID VARCHAR(100),
-        bankCCC VARCHAR(255),
-        bankIBAN VARCHAR(255),
-        bankBIC VARCHAR(255),
+        bankCCC BLOB,
+        bankIBAN BLOB,
+        bankBIC BLOB,
         UNIQUE KEY paymentID (paymentID)
         );";
 
@@ -60,9 +60,9 @@ class MM_WPFS_Database
         addressState VARCHAR(255) NOT NULL,
         addressZip VARCHAR(100) NOT NULL,
         created DATETIME NOT NULL,
-        bankCCC VARCHAR(255),
-        bankIBAN VARCHAR(255),
-        bankBIC VARCHAR(255),
+        bankCCC BLOB,
+        bankIBAN BLOB,
+        bankBIC BLOB,
         UNIQUE KEY subscriberID (subscriberID)
         );";
 
