@@ -433,8 +433,6 @@ class MM_WPFS_Customer
                   $phoney_payment->created = mktime();
                   $this->db->fullstripe_insert_payment($phoney_payment, $address, BANK_STRING_VALUE, $otherData);
                   $return = array('success' => true, 'msg' => __("Payment Successful!", "wp-full-stripe"));
-
-                  //$return = array('success' => false, 'msg' => $enc_bank_intl_iban . ' || ' . $enc_bank_intl_bic); // for testing
                 }else{
                   $return = array('success' => false, 'msg' => __('There was an error processing your payment', 'wp-full-stripe'));
                 }
