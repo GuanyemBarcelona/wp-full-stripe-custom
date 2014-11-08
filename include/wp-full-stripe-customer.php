@@ -382,11 +382,6 @@ class MM_WPFS_Customer
                 $this->db->fullstripe_insert_payment($result, $address, $stripeCustomer->id, $otherData);
 
                 $return = array('success' => true, 'msg' => __("Payment Successful!", "wp-full-stripe"));
-                if ($doRedirect == 1)
-                {
-                    $return['redirect'] = true;
-                    $return['redirectURL'] = get_page_link($redirectPostID);
-                }
 
                 //send email receipt (it is better if done in a background thread...)
                 if ($sendPluginEmail && $sendReceipt == 1 && isset($_POST['fullstripe_email']))
@@ -436,6 +431,12 @@ class MM_WPFS_Customer
                 }else{
                   $return = array('success' => false, 'msg' => __('There was an error processing your payment', 'wp-full-stripe'));
                 }
+              }
+
+              if ($doRedirect == 1)
+              {
+                  $return['redirect'] = true;
+                  $return['redirectURL'] = get_page_link($redirectPostID);
               }
             }
             catch (Exception $e)
@@ -731,11 +732,7 @@ class MM_WPFS_Customer
                   $this->db->fullstripe_insert_subscriber($customer, $name, $address, $otherData);
 
                   $return = array('success' => true, 'msg' => __("Payment Successful. Thanks for subscribing!", "wp-full-stripe"));
-                  if ($doRedirect == 1)
-                  {
-                      $return['redirect'] = true;
-                      $return['redirectURL'] = get_page_link($redirectPostID);
-                  }
+
                 }else{
                   /* No Stripe payment Override */
                   // encrypt all the bank data
@@ -777,6 +774,12 @@ class MM_WPFS_Customer
                   }else{
                     $return = array('success' => false, 'msg' => __('There was an error processing your payment', 'wp-full-stripe'));
                   }
+                }
+
+                if ($doRedirect == 1)
+                {
+                    $return['redirect'] = true;
+                    $return['redirectURL'] = get_page_link($redirectPostID);
                 }
             }
             catch (Exception $e)
