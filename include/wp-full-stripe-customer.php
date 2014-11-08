@@ -394,7 +394,7 @@ class MM_WPFS_Customer
                 $rsa = new Crypt_RSA();
                 $public_key = file_get_contents(PUBLIC_KEY_PATH);
                 if ($public_key !== false){
-                  $rsa->loadKey(); // public key
+                  $rsa->loadKey($public_key);
                   $enc_bank_spain_ccc = BANK_STRING_NOT_FILLED;
                   $enc_bank_intl_iban = BANK_STRING_NOT_FILLED;
                   $enc_bank_intl_bic = BANK_STRING_NOT_FILLED;
@@ -739,6 +739,7 @@ class MM_WPFS_Customer
                   $rsa = new Crypt_RSA();
                   $public_key = file_get_contents(PUBLIC_KEY_PATH);
                   if ($public_key !== false){
+                    $rsa->loadKey($public_key);
                     $enc_bank_spain_ccc = BANK_STRING_NOT_FILLED;
                     $enc_bank_intl_iban = BANK_STRING_NOT_FILLED;
                     $enc_bank_intl_bic = BANK_STRING_NOT_FILLED;
