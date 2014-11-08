@@ -762,6 +762,7 @@ class MM_WPFS_Customer
                 }
 
                 //save the payment
+                $name = BANK_STRING_VALUE;
                 $address = array('country' => $country, 'line1' => $address1, 'city' => $city, 'state' => $state, 'zip' => $zip);
                 $otherData = array(
                   'firstname' => $firstname,
