@@ -331,6 +331,7 @@ jQuery(document).ready(function ($)
       var select = $('[name="fullstripe_pay_method"]');
       if (select.length){
         var methods = _getPaymentMethods();
+        var general_conditions = $('.general-conditions-wrapper .stripe-legal');
         for (var i in methods){
           var method_name = methods[i];
           var selected = '';
@@ -341,9 +342,13 @@ jQuery(document).ready(function ($)
           }
           select.append('<option value="'+i+'"'+selected+'>'+method_name+'</option>');
         }
-
         select.change(function (){
           var method_value = $(this).val();
+          if (method_value == 'credit'){
+            general_conditions.show();
+          }else{
+            general_conditions.hide();
+          }
           $('.payment-method').each(function(i){
             var type = $(this).attr('data-type');
             if (type == method_value){
