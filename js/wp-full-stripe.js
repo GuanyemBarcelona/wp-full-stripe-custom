@@ -49,38 +49,37 @@ jQuery(document).ready(function ($)
 
     $('#payment-form').submit(function (e)
     {   
-        e.preventDefault();
+      e.preventDefault();
 
-        // acceptances
-        var error_msg = '';
-        var terms_check = $('#fullstripe_accept_terms');
-        if (terms_check.is(':checked')){
-          $("#showLoading").show();
+      // acceptances
+      var error_msg = '';
+      var terms_check = $('#fullstripe_accept_terms');
+      if (terms_check.is(':checked')){
+        $("#showLoading").show();
 
-          var $form = $(this);
+        var $form = $(this);
 
-          // Disable the submit button
-          $form.find('button').prop('disabled', true);
+        // Disable the submit button
+        $form.find('button').prop('disabled', true);
 
-          // payment method
-          $pay_method = $form.find('[name="fullstripe_pay_method"]');
-          if ($pay_method.val() == 'credit'){
-            Stripe.createToken($form, stripeResponseHandler);
-          }else{
-            // No Stripe payment Override
-            bankStartTransfer();
-          }
+        // payment method
+        $pay_method = $form.find('[name="fullstripe_pay_method"]');
+        if ($pay_method.val() == 'credit'){
+          Stripe.createToken($form, stripeResponseHandler);
         }else{
-          error_msg = locale.ERROR_TERMS[config.LANGUAGE];
+          // No Stripe payment Override
+          bankStartTransfer();
         }
-        if (error_msg == ''){
-          $err.removeClass('alert alert-error');
-        }else{
-          $err.addClass('alert alert-error');
-        }
-        $err.html(error_msg);
-
-        //location.hash = '#content';
+      }else{
+        error_msg = locale.ERROR_TERMS[config.LANGUAGE];
+      }
+      if (error_msg == ''){
+        $err.removeClass('alert alert-error');
+      }else{
+        $.scrollTo('#content', 800);
+        $err.addClass('alert alert-error');
+      }
+      $err.html(error_msg);
     });
 
     var bankStartTransfer = function(){
@@ -90,6 +89,8 @@ jQuery(document).ready(function ($)
     var stripeResponseHandler = function (status, response)
     {
         var $form = $('#payment-form');
+
+        $.scrollTo('#content', 800);
 
         if (response.error)
         {
@@ -121,7 +122,9 @@ jQuery(document).ready(function ($)
           cache: false,
           dataType: "json",
           success: function (data)
-          {
+          {   
+              $.scrollTo('#content', 800);
+
               $("#showLoading").hide();
               // remove fields errors
               $('.control-group').removeClass('error');
@@ -180,6 +183,8 @@ jQuery(document).ready(function ($)
     {
         var $form = $('#payment-form-style');
 
+        $.scrollTo('#content', 800);
+
         if (response.error)
         {
             // Show the errors
@@ -203,7 +208,9 @@ jQuery(document).ready(function ($)
                 cache: false,
                 dataType: "json",
                 success: function (data)
-                {
+                {   
+                    $.scrollTo('#content', 800);
+
                     $("#showLoading").hide();
 
                     if (data.success)
@@ -295,6 +302,8 @@ jQuery(document).ready(function ($)
                 dataType: "json",
                 success: function (data)
                 {
+                    $.scrollTo('#content', 800);
+
                     $("#fullstripe_check_coupon_code").prop('disabled', false);
                     $("#showLoadingC").hide();
 
