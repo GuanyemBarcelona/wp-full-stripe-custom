@@ -61,7 +61,7 @@
                 </select>
                 <select name="fullstripe_birthdate[]" class="inline">
                   <option value=""><?php _e("Year", "wp-full-stripe"); ?></option>
-                  <?php for ($i = 1910; $i <= date('Y'); $i++){ ?>
+                  <?php for ($i = date('Y'); $i >= 1910; $i--){ ?>
                   <option value="<?php echo $i; ?>"><?php echo $i; ?></option>
                   <?php } ?>
                 </select>
