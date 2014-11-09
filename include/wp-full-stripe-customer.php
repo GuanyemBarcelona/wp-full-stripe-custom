@@ -199,7 +199,7 @@ class MM_WPFS_Customer
         if ($isCustom == 1)
         {
             $amount = $_POST['fullstripe_custom_amount'];
-            if (!is_numeric($amount))
+            if (!is_numeric($amount) || $amount <= 0)
             {
                 $error_messages[] = array(
                   'text' => __('The payment amount is invalid, please only use numbers and a decimal point', 'wp-full-stripe'),
