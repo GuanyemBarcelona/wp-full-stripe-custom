@@ -151,6 +151,7 @@ jQuery(document).ready(function ($)
                   // show the errors on the form
                   $err.addClass('alert alert-error');
                   var messages = "";
+                  if (data.msg) messages = data.msg + '<br>';
                   for (var i in data.error_messages){
                     var obj = data.error_messages[i];
                     messages += obj.text + '<br>';
