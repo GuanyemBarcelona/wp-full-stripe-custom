@@ -341,7 +341,7 @@ class MM_WPFS_Customer
 
         if ($valid)
         {
-            
+            $return = array();
             try
             {
               if ($is_payment_credit){
@@ -381,7 +381,8 @@ class MM_WPFS_Customer
                 );
                 $this->db->fullstripe_insert_payment($result, $address, $stripeCustomer->id, $otherData);
 
-                $return = array('success' => true, 'msg' => __("Payment Successful!", "wp-full-stripe"));
+                $return['success'] = true;
+                $return['msg'] = __("Payment Successful!", "wp-full-stripe");
 
                 //send email receipt (it is better if done in a background thread...)
                 if ($sendPluginEmail && $sendReceipt == 1 && isset($_POST['fullstripe_email']))
@@ -427,9 +428,12 @@ class MM_WPFS_Customer
                   $phoney_payment->fee = BANK_STRING_VALUE;
                   $phoney_payment->created = mktime();
                   $this->db->fullstripe_insert_payment($phoney_payment, $address, BANK_STRING_VALUE, $otherData);
-                  $return = array('success' => true, 'msg' => __("Payment Successful!", "wp-full-stripe"));
+
+                  $return['success'] = true;
+                  $return['msg'] = __("Payment Successful!", "wp-full-stripe");
                 }else{
-                  $return = array('success' => false, 'msg' => __('There was an error processing your payment', 'wp-full-stripe'));
+                  $return['success'] = false;
+                  $return['msg'] = __("There was an error processing your payment", "wp-full-stripe");
                 }
               }
 
@@ -442,7 +446,8 @@ class MM_WPFS_Customer
             catch (Exception $e)
             {
                 //show notification of error
-                $return = array('success' => false, 'msg' => __('There was an error processing your payment: ', 'wp-full-stripe') . $e->getMessage());
+                $return['success'] = false;
+                $return['msg'] = __("There was an error processing your payment", "wp-full-stripe") . ': ' . $e->getMessage();
             }
             
         }
@@ -699,7 +704,7 @@ class MM_WPFS_Customer
 
         if ($valid)
         {
-            
+            $return = array();
             try
             {
                 if ($is_payment_credit){
@@ -731,7 +736,7 @@ class MM_WPFS_Customer
 
                   $this->db->fullstripe_insert_subscriber($customer, $name, $address, $otherData);
 
-                  $return = array('success' => true, 'msg' => __("Payment Successful. Thanks for subscribing!", "wp-full-stripe"));
+                  $return['msg'] = __("Payment Successful. Thanks for subscribing!", "wp-full-stripe");
 
                 }else{
                   /* No Stripe payment Override */
@@ -771,9 +776,11 @@ class MM_WPFS_Customer
                     $phoney_payment->created = mktime();
                     $this->db->fullstripe_insert_subscriber($phoney_payment, $name, $address, $otherData);
 
-                    $return = array('success' => true, 'msg' => __("Payment Successful. Thanks for subscribing!", "wp-full-stripe"));
+                    $return['success'] = true;
+                    $return['msg'] = __("Payment Successful. Thanks for subscribing!", "wp-full-stripe");
                   }else{
-                    $return = array('success' => false, 'msg' => __('There was an error processing your payment', 'wp-full-stripe'));
+                    $return['success'] = false;
+                    $return['msg'] = __("There was an error processing your payment", "wp-full-stripe");
                   }
                 }
 
@@ -786,7 +793,8 @@ class MM_WPFS_Customer
             catch (Exception $e)
             {
                 //show notification of error
-                $return = array('success' => false, 'msg' => __('There was an error processing your payment: ', 'wp-full-stripe') . $e->getMessage());
+                $return['success'] = false;
+                $return['msg'] = __("There was an error processing your payment", "wp-full-stripe") . ': ' . $e->getMessage();
             }
         }
 
