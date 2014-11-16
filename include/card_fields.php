@@ -3,7 +3,7 @@
   <div class="control-group">
       <label class="control-label fullstripe-form-label"><?php _e("Card Holder's Name", "wp-full-stripe"); ?> <span class="required-field">*</span></label>
       <div class="controls">
-          <input type="text" placeholder="Full name" class="input-xlarge fullstripe-form-input" name="fullstripe_name" id="fullstripe_name">
+          <input type="text" placeholder="<?php _e("Full name", "wp-full-stripe"); ?>" class="input-xlarge fullstripe-form-input" name="fullstripe_name" id="fullstripe_name">
       </div>
   </div>
   <div class="row-fluid">
