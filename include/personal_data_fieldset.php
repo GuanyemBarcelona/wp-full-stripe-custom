@@ -110,7 +110,7 @@
             </div>
         </div>
         <div class="control-group span3">
-            <label class="control-label fullstripe-form-label"><?php echo $localeState; ?></label>
+            <label class="control-label fullstripe-form-label"><?php _e("Region", "wp-full-stripe"); ?></label>
             <div class="controls">
               <select name="fullstripe_address_state" id="fullstripe_address_state">
                 
@@ -125,7 +125,7 @@
         </div>
         
         <div class="control-group span3">
-            <label class="control-label fullstripe-form-label"><?php echo $localeZip; ?> <span class="required-field">*</span></label>
+            <label class="control-label fullstripe-form-label"><?php _e("Zip / Postcode", "wp-full-stripe"); ?> <span class="required-field">*</span></label>
             <div class="controls">
                 <input type="text" style="width: 60px;"  name="fullstripe_address_zip" id="fullstripe_address_zip" class="fullstripe-form-input"><br/>
             </div>
