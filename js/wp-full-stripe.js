@@ -33,6 +33,28 @@ var locale = {
   PAYMENT_METHOD_INTERNATIONAL_BANK_ACCOUNT: {
     ca: "Domiciliació compte estranger (IBAN)",
     es: "Domiciliación cuenta extranjera (IBAN)"
+  }
+};
+var stripe_locale = {
+  "This card number looks invalid": {
+    ca: "Aquest número de targeta sembla erroni",
+    es: "Este número de tarjeta parece erróneo"
+  },
+  "Your card number is incorrect.": {
+    ca: "El número de la targeta és incorrecte",
+    es: "El número de la tarjeta es incorrecto"
+  },
+  "Your card's expiration year is invalid.": {
+    ca: "L'any de caducitat de la targeta és incorrecte",
+    es: "El año de caducidad de la tarjeta es incorrecto"
+  },
+  "Your card's expiration month is invalid.": {
+    ca: "El mes de caducitat de la targeta és incorrecte",
+    es: "El mes de caducidad de la tarjeta es incorrecto"
+  },
+  "Your card's security code is invalid.": {
+    ca: "El codi de seguretat de la targeta és incorrecte",
+    es: "El código de seguridad de la tarjeta es incorrecto"
   },
 };
 var config = {
@@ -43,6 +65,14 @@ jQuery(document).ready(function ($)
 {
     config.LANGUAGE = $('html').attr('lang');
     if (config.LANGUAGE == 'es-ES') config.LANGUAGE = 'es';
+
+    // Stripe strings localization
+    var _get_localized_stripe_string = function(str){
+      if (typeof stripe_locale[str] !== 'undefined'){
+        return stripe_locale[str][config.LANGUAGE];
+      }
+      return str;
+    };
 
     $("#showLoading").hide();
     $("#showLoadingC").hide();
@@ -97,7 +127,7 @@ jQuery(document).ready(function ($)
         {
             // Show the errors
             $err.addClass('alert alert-error');
-            $err.html(response.error.message);
+            $err.html(_get_localized_stripe_string(response.error.message));
             $err.fadeIn(500).fadeOut(500).fadeIn(500);
             $form.find('button').prop('disabled', false);
             $("#showLoading").hide();
@@ -495,5 +525,4 @@ jQuery(document).ready(function ($)
         doctype_values.find('[data-type="'+value+'"]').fadeIn(300);
       });
     }
-    
 });
