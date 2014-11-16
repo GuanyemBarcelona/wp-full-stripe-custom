@@ -26,7 +26,7 @@
 
         <h4>Consentimiento orden de domiciliación  y cargos en tarjeta de crédito o débito</h4>
 
-        <p>Al pulsar el botón “Hacer donación” usted autoriza a Guanyem Barcelona y a su entidad bancaria a efectuar las operaciones de cobro mediante adeudos y cargos en la cuenta bancaria o en la tarjeta financiera que usted nos ha facilitado, por el importe y con la frecuencia que nos ha indicado en el formulario. Los adeudos domiciliados y los cargos en tarjeta se realizarán entre el día 1 y 15 de cada mes, trimestre o año dependiendo de la frecuencia de pago que ha elegido.</p>
+        <p>Al pulsar el botón “Hacer donación” usted autoriza a Guanyem Barcelona y a su entidad bancaria a efectuar las operaciones de cobro mediante adeudos y cargos en la cuenta bancaria o en la tarjeta financiera que usted nos ha facilitado, por el importe y con la frecuencia que nos ha indicado en el formulario. Los adeudos domiciliados y los cargos en tarjeta se realizarán entre el día 1 y 15 de cada mes.</p>
         <?php } ?>
       </div>
     </div>
