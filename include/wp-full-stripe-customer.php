@@ -742,6 +742,7 @@ class MM_WPFS_Customer
 
                   $this->db->fullstripe_insert_subscriber($customer, $name, $address, $otherData);
 
+                  $return['success'] = true;
                   $return['msg'] = __("Payment Successful. Thanks for subscribing!", "wp-full-stripe");
 
                 }else{
