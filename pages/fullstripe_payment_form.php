@@ -34,7 +34,7 @@
       <?php endif; ?>
 
       <?php include(WP_FULL_STRIPE_DIR . '/include/card_fields.php'); ?>
-      <?php include(WP_FULL_STRIPE_DIR . '/include/bank-spanish-fields.php'); ?>
+      <?php //include(WP_FULL_STRIPE_DIR . '/include/bank-spanish-fields.php'); ?>
       <?php include(WP_FULL_STRIPE_DIR . '/include/bank-international-fields.php'); ?>
     </fieldset>
 
