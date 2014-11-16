@@ -385,10 +385,10 @@ class MM_WPFS_Customer
                 $return['msg'] = __("Payment Successful!", "wp-full-stripe");
 
                 //send email receipt (it is better if done in a background thread...)
-                if ($sendPluginEmail && $sendReceipt == 1 && isset($_POST['fullstripe_email']))
+                /*if ($sendPluginEmail && $sendReceipt == 1 && isset($_POST['fullstripe_email']))
                 {
                     $this->fullstripe_send_email_receipt($email, $amount, $name, $address);
-                }
+                }*/
               }else{
                 /* No Stripe payment Override */
                 // encrypt all the bank data
@@ -435,6 +435,12 @@ class MM_WPFS_Customer
                   $return['success'] = false;
                   $return['msg'] = __("There was an error processing your payment", "wp-full-stripe");
                 }
+              }
+
+              //send email receipt whichever the payment method if receiptEmailType != stripe
+              if ($options['receiptEmailType'] != 'stripe' && $sendReceipt == 1 && isset($_POST['fullstripe_email']))
+              {
+                  $this->fullstripe_send_email_receipt($email, $amount, $name, $address);
               }
 
               if ($doRedirect == 1)
@@ -782,6 +788,12 @@ class MM_WPFS_Customer
                     $return['success'] = false;
                     $return['msg'] = __("There was an error processing your payment", "wp-full-stripe");
                   }
+                }
+
+                //send email receipt whichever the payment method if receiptEmailType != stripe
+                if (isset($_POST['fullstripe_email']))
+                {
+                    $this->fullstripe_send_email_receipt($email, '', $firstname . ' ' . $lastname, $address);
                 }
 
                 if ($doRedirect == 1)
