@@ -332,7 +332,7 @@ jQuery(document).ready(function ($)
     var _getPaymentMethods = function(){
       return {
         'credit': locale.PAYMENT_METHOD_CREDIT_CARD[config.LANGUAGE],
-        'spanishaccount': locale.PAYMENT_METHOD_SPANISH_BANK_ACCOUNT[config.LANGUAGE],
+        /*'spanishaccount': locale.PAYMENT_METHOD_SPANISH_BANK_ACCOUNT[config.LANGUAGE],*/
         'internationalaccount': locale.PAYMENT_METHOD_INTERNATIONAL_BANK_ACCOUNT[config.LANGUAGE]
       };
     };
