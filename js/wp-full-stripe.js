@@ -27,11 +27,11 @@ var locale = {
     es: "Tarjeta de crédito"
   },
   PAYMENT_METHOD_SPANISH_BANK_ACCOUNT: {
-    ca: "Domiciliació compta bancària (CCC)",
+    ca: "Domiciliació compte bancari (CCC)",
     es: "Domiciliación cuenta bancaria (CCC)"
   },
   PAYMENT_METHOD_INTERNATIONAL_BANK_ACCOUNT: {
-    ca: "Domiciliació compta extrangera (IBAN)",
+    ca: "Domiciliació compte estranger (IBAN)",
     es: "Domiciliación cuenta extranjera (IBAN)"
   },
 };
@@ -42,6 +42,7 @@ var config = {
 jQuery(document).ready(function ($)
 {
     config.LANGUAGE = $('html').attr('lang');
+    if (config.LANGUAGE == 'es-ES') config.LANGUAGE = 'es';
 
     $("#showLoading").hide();
     $("#showLoadingC").hide();
