@@ -44,9 +44,9 @@
     <div class="control-group actions">
         <div class="controls">
           <?php if ( $formData->customAmount == 0 ): ?>
-            <button type="submit"><?php _e($formData->buttonTitle, "wp-full-stripe"); ?> <?php if ($formData->showButtonAmount == 1) {echo $currencySymbol . sprintf('%0.2f', $formData->amount / 100.0);}  ?></button>
+            <button type="submit"><?php _e("Make donation", "wp-full-stripe"); ?> <?php if ($formData->showButtonAmount == 1) {echo $currencySymbol . sprintf('%0.2f', $formData->amount / 100.0);}  ?></button>
           <?php else: ?>
-            <button type="submit"><?php _e($formData->buttonTitle, "wp-full-stripe"); ?></button>
+            <button type="submit"><?php _e("Make donation", "wp-full-stripe"); ?></button>
           <?php endif; ?>
         </div>
     </div>
