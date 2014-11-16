@@ -31,8 +31,8 @@ var locale = {
     es: "Domiciliación cuenta bancaria (CCC)"
   },
   PAYMENT_METHOD_INTERNATIONAL_BANK_ACCOUNT: {
-    ca: "Domiciliació compte estranger (IBAN)",
-    es: "Domiciliación cuenta extranjera (IBAN)"
+    ca: "Domiciliació compte (IBAN)",
+    es: "Domiciliación cuenta (IBAN)"
   }
 };
 var stripe_locale = {
