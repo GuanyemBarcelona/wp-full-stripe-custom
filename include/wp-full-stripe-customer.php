@@ -173,12 +173,7 @@ class MM_WPFS_Customer
               }
             }
             $bank_intl_bic = isset($_POST['bank_intl_bic']) ? sanitize_text_field($_POST['bank_intl_bic']) : '';
-            if ($bank_intl_bic == ''){
-              $error_messages[] = array(
-                'text' => __('Please enter the BIC', 'wp-full-stripe'),
-                'input' => 'bank_intl_bic',
-              );
-            }else{
+            if ($bank_intl_bic != ''){
               if(!MM_WPFS_Customer::is_valid_bic($bank_intl_bic)) {
                 $error_messages[] = array(
                   'text' => __('The BIC is invalid', 'wp-full-stripe'),
