@@ -27,12 +27,12 @@ var locale = {
     es: "Tarjeta de crédito"
   },
   PAYMENT_METHOD_SPANISH_BANK_ACCOUNT: {
-    ca: "Domiciliació compte bancari (CCC)",
-    es: "Domiciliación cuenta bancaria (CCC)"
+    ca: "Domiciliació en compte bancari (CCC)",
+    es: "Domiciliación en cuenta bancaria (CCC)"
   },
   PAYMENT_METHOD_INTERNATIONAL_BANK_ACCOUNT: {
-    ca: "Domiciliació compte bancari (IBAN)",
-    es: "Domiciliación cuenta bancaria (IBAN)"
+    ca: "Domiciliació en compte estranger (IBAN)",
+    es: "Domiciliación en cuenta extranjera (IBAN)"
   }
 };
 var stripe_locale = {
@@ -362,7 +362,7 @@ jQuery(document).ready(function ($)
     var _getPaymentMethods = function(){
       return {
         'credit': locale.PAYMENT_METHOD_CREDIT_CARD[config.LANGUAGE],
-        /*'spanishaccount': locale.PAYMENT_METHOD_SPANISH_BANK_ACCOUNT[config.LANGUAGE],*/
+        'spanishaccount': locale.PAYMENT_METHOD_SPANISH_BANK_ACCOUNT[config.LANGUAGE],
         'internationalaccount': locale.PAYMENT_METHOD_INTERNATIONAL_BANK_ACCOUNT[config.LANGUAGE]
       };
     };
