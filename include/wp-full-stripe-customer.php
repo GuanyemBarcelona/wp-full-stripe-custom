@@ -367,6 +367,7 @@ class MM_WPFS_Customer
                 //save the payment
                 $address = array('country' => $country, 'line1' => $address1, 'city' => $city, 'state' => $state, 'zip' => $zip);
                 $otherData = array(
+                  'email' => $email,
                   'firstname' => $firstname,
                   'lastname' => $lastname,
                   'telephone' => $telephone,
@@ -404,6 +405,7 @@ class MM_WPFS_Customer
                   //save the payment
                   $address = array('country' => $country, 'line1' => $address1, 'city' => $city, 'state' => $state, 'zip' => $zip);
                   $otherData = array(
+                    'email' => $email,
                     'firstname' => $firstname,
                     'lastname' => $lastname,
                     'telephone' => $telephone,
@@ -722,7 +724,6 @@ class MM_WPFS_Customer
                   do_action('fullstripe_before_subscription_charge', $plan);
                   $customer = $this->stripe->subscribe($plan, $card, $email, $description, $couponCode, $setupFee, $metadata);
                   do_action('fullstripe_after_subscription_charge', $customer);
-                  // TODO: $customer is null!
 
                   // save the subscriber
                   $address = array('country' => $country, 'line1' => $address1, 'city' => $city, 'state' => $state, 'zip' => $zip);
@@ -735,6 +736,7 @@ class MM_WPFS_Customer
                     'birthDate' => $birthdate->getTimestamp(),
                   );
 
+                  $customer->plan = $plan; // $customer is null (async call?), created this attribute
                   $this->db->fullstripe_insert_subscriber($customer, $name, $address, $otherData);
 
                   $return['success'] = true;
@@ -773,8 +775,8 @@ class MM_WPFS_Customer
                     );
                     $phoney_payment = new stdClass();
                     $phoney_payment->id = BANK_STRING_VALUE;
-                    $phoney_payment->email = BANK_STRING_VALUE;
-                    $customer->subscription->plan->id = BANK_STRING_VALUE;
+                    $phoney_payment->email = $email;
+                    $phoney_payment->plan = $plan;
                     $phoney_payment->created = mktime();
                     $this->db->fullstripe_insert_subscriber($phoney_payment, $name, $address, $otherData);
 
