@@ -63,8 +63,11 @@ var config = {
 
 jQuery(document).ready(function ($)
 {
-    config.LANGUAGE = $('html').attr('lang');
-    if (config.LANGUAGE == 'es-ES') config.LANGUAGE = 'es';
+		var lang = $('html').attr('lang');
+		if (typeof attr !== typeof undefined && attr !== false) {
+		  config.LANGUAGE = lang;
+    	if (config.LANGUAGE == 'es-ES') config.LANGUAGE = 'es';
+		}
 
     // Stripe strings localization
     var _get_localized_stripe_string = function(str){
