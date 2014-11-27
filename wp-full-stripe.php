@@ -20,8 +20,6 @@ if (!defined('WP_FULL_STRIPE_DIR'))
 
 if (!defined('PUBLIC_KEY_PATH'))
     define('PUBLIC_KEY_PATH', $_SERVER['HOME'] . '/webs/keys/id_rsa.pub');
-if (!defined('PRIVATE_KEY_PATH'))
-    define('PRIVATE_KEY_PATH', $_SERVER['HOME'] . '/webs/keys/id_rsa.key');  
 if (!defined('BANK_STRING_NOT_FILLED'))
     define('BANK_STRING_NOT_FILLED', 'BANK FIELD NOT FILLED');
 if (!defined('BANK_STRING_VALUE'))
