@@ -9,7 +9,7 @@
 
 Stripe.setPublishableKey(stripekey);
 
-var locale = {
+var wpfullstripe_locale = {
   ERROR_TERMS: {
     ca: "Has d'acceptar les condicions generals per continuar.",
     es: "Tienes que aceptar las condiciones generales para continuar."
@@ -57,18 +57,9 @@ var stripe_locale = {
     es: "El código de seguridad de la tarjeta es incorrecto"
   },
 };
-var config = {
-  LANGUAGE: 'ca'
-};
 
 jQuery(document).ready(function ($)
 {
-		var lang = $('html').attr('lang');
-		if (typeof attr !== typeof undefined && attr !== false) {
-		  config.LANGUAGE = lang;
-    	if (config.LANGUAGE == 'es-ES') config.LANGUAGE = 'es';
-		}
-
     // Stripe strings localization
     var _get_localized_stripe_string = function(str){
       if (typeof stripe_locale[str] !== 'undefined'){
@@ -105,7 +96,7 @@ jQuery(document).ready(function ($)
           bankStartTransfer();
         }
       }else{
-        error_msg = locale.ERROR_TERMS[config.LANGUAGE];
+        error_msg = wpfullstripe_locale.ERROR_TERMS[config.LANGUAGE];
       }
       if (error_msg == ''){
         $err.removeClass('alert alert-error');
@@ -287,9 +278,9 @@ jQuery(document).ready(function ($)
         var amount = parseFloat($(this).attr('data-amount') / 100);
         var cur = $(this).attr("data-currency");
         var interval = $(this).attr('data-interval');
-        var str = amount + cur + " " + locale.PER[config.LANGUAGE] + " ";
+        var str = amount + cur + " " + wpfullstripe_locale.PER[config.LANGUAGE] + " ";
         if (count > 1) str += count + " ";
-        str += locale[interval.toUpperCase()][config.LANGUAGE];
+        str += wpfullstripe_locale[interval.toUpperCase()][config.LANGUAGE];
         //if (count > 1) str += "s";
 
         if (coupon != false)
@@ -364,9 +355,9 @@ jQuery(document).ready(function ($)
 
     var _getPaymentMethods = function(){
       return {
-        'credit': locale.PAYMENT_METHOD_CREDIT_CARD[config.LANGUAGE],
-        'spanishaccount': locale.PAYMENT_METHOD_SPANISH_BANK_ACCOUNT[config.LANGUAGE],
-        'internationalaccount': locale.PAYMENT_METHOD_INTERNATIONAL_BANK_ACCOUNT[config.LANGUAGE]
+        'credit': wpfullstripe_locale.PAYMENT_METHOD_CREDIT_CARD[config.LANGUAGE],
+        'spanishaccount': wpfullstripe_locale.PAYMENT_METHOD_SPANISH_BANK_ACCOUNT[config.LANGUAGE],
+        'internationalaccount': wpfullstripe_locale.PAYMENT_METHOD_INTERNATIONAL_BANK_ACCOUNT[config.LANGUAGE]
       };
     };
 
